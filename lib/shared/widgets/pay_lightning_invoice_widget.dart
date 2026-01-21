@@ -41,11 +41,11 @@ class _PayLightningInvoiceWidgetState extends State<PayLightningInvoiceWidget> {
       children: [
         Text(
           S.of(context)!.payInvoiceToContinue(
-            widget.sats.toString(),
-            widget.fiatCode,
-            widget.fiatAmount,
-            widget.orderId,
-          ),
+                widget.sats.toString(),
+                widget.fiatCode,
+                widget.fiatAmount,
+                widget.orderId,
+              ),
           style: const TextStyle(color: AppTheme.cream1, fontSize: 18),
           textAlign: TextAlign.center,
         ),

@@ -10,7 +10,8 @@ class RangeAmount {
       throw ArgumentError('Maximum amount cannot be negative: $maximum');
     }
     if (maximum != null && maximum! < minimum) {
-      throw ArgumentError('Maximum amount ($maximum) cannot be less than minimum ($minimum)');
+      throw ArgumentError(
+          'Maximum amount ($maximum) cannot be less than minimum ($minimum)');
     }
   }
 
@@ -25,7 +26,7 @@ class RangeAmount {
       if (minString.isEmpty) {
         throw FormatException('Minimum value string cannot be empty');
       }
-      
+
       final min = double.tryParse(minString)?.toInt();
       if (min == null) {
         throw FormatException('Invalid minimum value format: $minString');
@@ -53,7 +54,7 @@ class RangeAmount {
       if (!json.containsKey('minimum')) {
         throw FormatException('Missing required field: minimum');
       }
-      
+
       final minValue = json['minimum'];
       int minimum;
       if (minValue is int) {
@@ -64,7 +65,7 @@ class RangeAmount {
       } else {
         throw FormatException('Invalid minimum type: ${minValue.runtimeType}');
       }
-      
+
       int? maximum;
       final maxValue = json['maximum'];
       if (maxValue != null) {
@@ -74,10 +75,11 @@ class RangeAmount {
           maximum = int.tryParse(maxValue) ??
               (throw FormatException('Invalid maximum format: $maxValue'));
         } else {
-          throw FormatException('Invalid maximum type: ${maxValue.runtimeType}');
+          throw FormatException(
+              'Invalid maximum type: ${maxValue.runtimeType}');
         }
       }
-      
+
       return RangeAmount(minimum, maximum);
     } catch (e) {
       throw FormatException('Failed to parse RangeAmount from JSON: $e');

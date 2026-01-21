@@ -15,7 +15,6 @@ class NotificationMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     return PopupMenuButton<String>(
       icon: HeroIcon(
         HeroIcons.ellipsisVertical,
@@ -29,7 +28,6 @@ class NotificationMenu extends StatelessWidget {
         if (!notification.isRead) _buildMarkAsReadMenuItem(context),
         _buildDeleteMenuItem(context),
       ],
-      
     );
   }
 
@@ -38,12 +36,10 @@ class NotificationMenu extends StatelessWidget {
       value: 'mark_read',
       child: Row(
         children: [
-          HeroIcon(
-            HeroIcons.check,
-            style: HeroIconStyle.outline,
-            size: 16,
-            color: Theme.of(context).colorScheme.primary
-          ),
+          HeroIcon(HeroIcons.check,
+              style: HeroIconStyle.outline,
+              size: 16,
+              color: Theme.of(context).colorScheme.primary),
           const SizedBox(width: 8),
           Text(
             S.of(context)!.markAsRead,
@@ -69,8 +65,8 @@ class NotificationMenu extends StatelessWidget {
           Text(
             S.of(context)!.notificationDelete,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.error,
-            ),
+                  color: Theme.of(context).colorScheme.error,
+                ),
           ),
         ],
       ),

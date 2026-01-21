@@ -12,7 +12,6 @@ import 'package:mostro_mobile/features/order/widgets/order_app_bar.dart';
 import 'package:mostro_mobile/shared/providers.dart';
 import 'package:mostro_mobile/shared/widgets/order_cards.dart';
 
-
 import 'package:mostro_mobile/shared/providers/exchange_service_provider.dart';
 import 'package:mostro_mobile/shared/utils/currency_utils.dart';
 
@@ -49,7 +48,7 @@ class _TakeOrderScreenState extends ConsumerState<TakeOrderScreen> {
         next.whenData((msg) {
           if (msg == null || msg.action == _lastSeenAction) return;
           _lastSeenAction = msg.action;
-          
+
           // Reset loading state only on CantDo message
           if (msg.action == actions.Action.cantDo && _isSubmitting) {
             setState(() {
@@ -100,7 +99,6 @@ class _TakeOrderScreenState extends ConsumerState<TakeOrderScreen> {
   Widget _buildSellerAmount(WidgetRef ref, NostrEvent order) {
     return Builder(
       builder: (context) {
-
         final currencyData = ref.watch(currencyCodesProvider).asData?.value;
         final currencyFlag = CurrencyUtils.getFlagFromCurrencyData(
             order.currency!, currencyData);
@@ -124,9 +122,7 @@ class _TakeOrderScreenState extends ConsumerState<TakeOrderScreen> {
           }
         }
 
-
         final hasFixedSatsAmount = order.amount != '0';
-
 
         return CustomCard(
           padding: const EdgeInsets.all(16),
@@ -150,11 +146,11 @@ class _TakeOrderScreenState extends ConsumerState<TakeOrderScreen> {
               const SizedBox(height: 8),
               Row(
                 children: [
-
                   Flexible(
                     child: RichText(
                       text: TextSpan(
-                        text: S.of(context)!.forAmountWithCurrency(amountString, order.currency ?? ''),
+                        text: S.of(context)!.forAmountWithCurrency(
+                            amountString, order.currency ?? ''),
                         style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 16,
@@ -169,7 +165,6 @@ class _TakeOrderScreenState extends ConsumerState<TakeOrderScreen> {
                               ),
                             ),
                         ],
-
                       ),
                       softWrap: true,
                       maxLines: 2,
@@ -230,8 +225,9 @@ class _TakeOrderScreenState extends ConsumerState<TakeOrderScreen> {
     final orderDetailsNotifier =
         ref.read(orderNotifierProvider(widget.orderId).notifier);
 
-    final buttonText =
-        widget.orderType == OrderType.buy ? S.of(context)!.sell : S.of(context)!.buy;
+    final buttonText = widget.orderType == OrderType.buy
+        ? S.of(context)!.sell
+        : S.of(context)!.buy;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -246,157 +242,179 @@ class _TakeOrderScreenState extends ConsumerState<TakeOrderScreen> {
         const SizedBox(width: 16),
         Expanded(
           child: ElevatedButton(
-            onPressed: _isSubmitting ? null : () async {
-              setState(() {
-                _isSubmitting = true;
-              });
-              // Check if this is a range order
-              if (order.fiatAmount.maximum != null &&
-                  order.fiatAmount.minimum != order.fiatAmount.maximum) {
-                // Show dialog to get the amount
-                String? errorText;
-                final enteredAmount = await showDialog<int>(
-                  context: context,
-                  builder: (context) {
-                    return StatefulBuilder(
-                      builder: (context, setState) {
-                        return AlertDialog(
-                          backgroundColor: AppTheme.backgroundCard,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
-                          ),
-                          title: Text(
-                            S.of(context)!.enterAmount,
-                            style: const TextStyle(
-                              color: AppTheme.textPrimary,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          content: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: AppTheme.backgroundInput,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-                            ),
-                            child: TextField(
-                              controller: widget._fiatAmountController,
-                              keyboardType: TextInputType.number,
-                              style: const TextStyle(color: AppTheme.textPrimary),
-                              decoration: InputDecoration(
-                                hintText: S.of(context)!.enterAmountBetween(
-                                    order.fiatAmount.minimum.toString(),
-                                    order.fiatAmount.maximum.toString(),
-                                    order.currency ?? ''),
-                                hintStyle: const TextStyle(color: AppTheme.textSecondary),
-                                errorText: errorText,
-                                errorStyle: const TextStyle(color: AppTheme.statusError),
-                                border: InputBorder.none,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                              ),
-                            ),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => context.pop(),
-                              child: Text(
-                                S.of(context)!.cancel,
-                                style: const TextStyle(
-                                  color: AppTheme.textSecondary,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            ElevatedButton(
-                              key: const Key('submitAmountButton'),
-                              onPressed: () {
-                                final inputAmount = int.tryParse(
-                                  widget._fiatAmountController.text.trim());
-                                if (inputAmount == null) {
-                                  setState(() {
-                                    errorText =
-                                        S.of(context)!.pleaseEnterValidNumber;
-                                  });
-                                } else if (inputAmount <
-                                        order.fiatAmount.minimum ||
-                                    (order.fiatAmount.maximum != null &&
-                                        inputAmount >
-                                            order.fiatAmount.maximum!)) {
-                                  setState(() {
-                                    errorText = S
-                                        .of(context)!
-                                        .amountMustBeBetween(
-                                            order.fiatAmount.minimum.toString(),
-                                            order.fiatAmount.maximum
-                                                .toString());
-                                  });
-                                } else {
-                                  context.pop(inputAmount);
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppTheme.activeColor,
-                                foregroundColor: Colors.black,
+            onPressed: _isSubmitting
+                ? null
+                : () async {
+                    setState(() {
+                      _isSubmitting = true;
+                    });
+                    // Check if this is a range order
+                    if (order.fiatAmount.maximum != null &&
+                        order.fiatAmount.minimum != order.fiatAmount.maximum) {
+                      // Show dialog to get the amount
+                      String? errorText;
+                      final enteredAmount = await showDialog<int>(
+                        context: context,
+                        builder: (context) {
+                          return StatefulBuilder(
+                            builder: (context, setState) {
+                              return AlertDialog(
+                                backgroundColor: AppTheme.backgroundCard,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(16),
+                                  side: BorderSide(
+                                      color:
+                                          Colors.white.withValues(alpha: 0.1)),
                                 ),
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                              ),
-                              child: Text(
-                                S.of(context)!.submit,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
+                                title: Text(
+                                  S.of(context)!.enterAmount,
+                                  style: const TextStyle(
+                                    color: AppTheme.textPrimary,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                );
+                                content: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 8),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.backgroundInput,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                        color: Colors.white
+                                            .withValues(alpha: 0.1)),
+                                  ),
+                                  child: TextField(
+                                    controller: widget._fiatAmountController,
+                                    keyboardType: TextInputType.number,
+                                    style: const TextStyle(
+                                        color: AppTheme.textPrimary),
+                                    decoration: InputDecoration(
+                                      hintText: S
+                                          .of(context)!
+                                          .enterAmountBetween(
+                                              order.fiatAmount.minimum
+                                                  .toString(),
+                                              order.fiatAmount.maximum
+                                                  .toString(),
+                                              order.currency ?? ''),
+                                      hintStyle: const TextStyle(
+                                          color: AppTheme.textSecondary),
+                                      errorText: errorText,
+                                      errorStyle: const TextStyle(
+                                          color: AppTheme.statusError),
+                                      border: InputBorder.none,
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              horizontal: 12, vertical: 8),
+                                    ),
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => context.pop(),
+                                    child: Text(
+                                      S.of(context)!.cancel,
+                                      style: const TextStyle(
+                                        color: AppTheme.textSecondary,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  ElevatedButton(
+                                    key: const Key('submitAmountButton'),
+                                    onPressed: () {
+                                      final inputAmount = int.tryParse(widget
+                                          ._fiatAmountController.text
+                                          .trim());
+                                      if (inputAmount == null) {
+                                        setState(() {
+                                          errorText = S
+                                              .of(context)!
+                                              .pleaseEnterValidNumber;
+                                        });
+                                      } else if (inputAmount <
+                                              order.fiatAmount.minimum ||
+                                          (order.fiatAmount.maximum != null &&
+                                              inputAmount >
+                                                  order.fiatAmount.maximum!)) {
+                                        setState(() {
+                                          errorText = S
+                                              .of(context)!
+                                              .amountMustBeBetween(
+                                                  order.fiatAmount.minimum
+                                                      .toString(),
+                                                  order.fiatAmount.maximum
+                                                      .toString());
+                                        });
+                                      } else {
+                                        context.pop(inputAmount);
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppTheme.activeColor,
+                                      foregroundColor: Colors.black,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 12),
+                                    ),
+                                    child: Text(
+                                      S.of(context)!.submit,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      );
 
-                if (enteredAmount != null) {
-                  if (widget.orderType == OrderType.buy) {
-                    await orderDetailsNotifier.takeBuyOrder(
-                        order.orderId!, enteredAmount);
-                  } else {
-                    final lndAddress = widget._lndAddressController.text.trim();
-                    await orderDetailsNotifier.takeSellOrder(
-                      order.orderId!,
-                      enteredAmount,
-                      lndAddress.isEmpty ? null : lndAddress,
-                    );
-                  }
-                } else {
-                  // Dialog was dismissed without entering amount, reset loading state
-                  setState(() {
-                    _isSubmitting = false;
-                  });
-                }
-              } else {
-                // Not a range order – use the existing logic.
-                final fiatAmount =
-                    int.tryParse(widget._fiatAmountController.text.trim());
-                if (widget.orderType == OrderType.buy) {
-                  await orderDetailsNotifier.takeBuyOrder(
-                      order.orderId!, fiatAmount);
-                } else {
-                  final lndAddress = widget._lndAddressController.text.trim();
-                  await orderDetailsNotifier.takeSellOrder(
-                    order.orderId!,
-                    fiatAmount,
-                    lndAddress.isEmpty ? null : lndAddress,
-                  );
-                }
-              }
-            },
+                      if (enteredAmount != null) {
+                        if (widget.orderType == OrderType.buy) {
+                          await orderDetailsNotifier.takeBuyOrder(
+                              order.orderId!, enteredAmount);
+                        } else {
+                          final lndAddress =
+                              widget._lndAddressController.text.trim();
+                          await orderDetailsNotifier.takeSellOrder(
+                            order.orderId!,
+                            enteredAmount,
+                            lndAddress.isEmpty ? null : lndAddress,
+                          );
+                        }
+                      } else {
+                        // Dialog was dismissed without entering amount, reset loading state
+                        setState(() {
+                          _isSubmitting = false;
+                        });
+                      }
+                    } else {
+                      // Not a range order – use the existing logic.
+                      final fiatAmount = int.tryParse(
+                          widget._fiatAmountController.text.trim());
+                      if (widget.orderType == OrderType.buy) {
+                        await orderDetailsNotifier.takeBuyOrder(
+                            order.orderId!, fiatAmount);
+                      } else {
+                        final lndAddress =
+                            widget._lndAddressController.text.trim();
+                        await orderDetailsNotifier.takeSellOrder(
+                          order.orderId!,
+                          fiatAmount,
+                          lndAddress.isEmpty ? null : lndAddress,
+                        );
+                      }
+                    }
+                  },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.mostroGreen,
             ),
@@ -474,7 +492,8 @@ class _CountdownWidget extends ConsumerWidget {
     if (expiresAtSeconds == null || expiresAtSeconds <= 0) {
       return const SizedBox.shrink();
     }
-    final expiration = DateTime.fromMillisecondsSinceEpoch(expiresAtSeconds * 1000);
+    final expiration =
+        DateTime.fromMillisecondsSinceEpoch(expiresAtSeconds * 1000);
     final createdAt = order.createdAt;
     if (createdAt == null) {
       return const SizedBox.shrink();

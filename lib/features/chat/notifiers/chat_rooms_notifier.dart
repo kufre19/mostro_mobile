@@ -14,7 +14,6 @@ class ChatRoomsNotifier extends StateNotifier<List<ChatRoom>> {
   ChatRoomsNotifier(this.ref) : super(const []) {
     loadChats();
   }
-  
 
   void reloadAllChats() {
     for (final chat in state) {
@@ -70,7 +69,7 @@ class ChatRoomsNotifier extends StateNotifier<List<ChatRoom>> {
     try {
       // Add a small delay to ensure state has been updated
       await Future.delayed(const Duration(milliseconds: 100));
-      
+
       final chats = sessions
           .where(
         (s) =>
@@ -96,9 +95,8 @@ class ChatRoomsNotifier extends StateNotifier<List<ChatRoom>> {
     // No need to manually refresh subscriptions
     // SubscriptionManager now handles this automatically based on SessionNotifier changes
     _logger.i('Subscription management is now handled by SubscriptionManager');
-    
+
     // Just reload the chat rooms from the current sessions
     //loadChats();
   }
-
 }

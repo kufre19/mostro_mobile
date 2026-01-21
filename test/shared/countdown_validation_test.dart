@@ -35,7 +35,6 @@ int convertSecondsToMinutes(int seconds) {
 
 void main() {
   group('Countdown Validation Tests', () {
-    
     group('Timestamp Validation', () {
       test('should reject negative timestamps', () {
         expect(isValidTimestamp(-1000), isFalse);
@@ -58,7 +57,7 @@ void main() {
         final now = DateTime.now();
         final futureTime = now.add(const Duration(minutes: 10));
         final threshold = now.add(const Duration(minutes: 5));
-        
+
         expect(isTimestampInFuture(futureTime, threshold), isTrue);
       });
 
@@ -66,7 +65,7 @@ void main() {
         final now = DateTime.now();
         final recentTime = now.add(const Duration(minutes: 2));
         final threshold = now.add(const Duration(minutes: 5));
-        
+
         expect(isTimestampInFuture(recentTime, threshold), isFalse);
       });
     });
@@ -76,7 +75,7 @@ void main() {
         final now = DateTime.now();
         final pastExpiration = now.subtract(const Duration(hours: 2));
         final threshold = now.subtract(const Duration(hours: 1));
-        
+
         expect(isExpirationTooFarInPast(pastExpiration, threshold), isTrue);
       });
 
@@ -84,7 +83,7 @@ void main() {
         final now = DateTime.now();
         final recentExpiration = now.subtract(const Duration(minutes: 30));
         final threshold = now.subtract(const Duration(hours: 1));
-        
+
         expect(isExpirationTooFarInPast(recentExpiration, threshold), isFalse);
       });
 
@@ -100,7 +99,7 @@ void main() {
     group('Time Calculations', () {
       test('should calculate duration components correctly', () {
         final duration = calculateDurationComponents(5, 30, 45);
-        
+
         expect(duration.inHours, equals(5));
         expect(duration.inMinutes % 60, equals(30));
         expect(duration.inSeconds % 60, equals(45));
@@ -115,7 +114,7 @@ void main() {
 
       test('should handle zero duration', () {
         final duration = calculateDurationComponents(0, 0, 0);
-        
+
         expect(duration.inHours, equals(0));
         expect(duration.inMinutes, equals(0));
         expect(duration.inSeconds, equals(0));
@@ -142,9 +141,12 @@ void main() {
       });
 
       test('should handle fractional minute conversions', () {
-        expect(convertSecondsToMinutes(930), equals(16)); // 15.5 minutes rounded up
-        expect(convertSecondsToMinutes(870), equals(15)); // 14.5 minutes rounded up
-        expect(convertSecondsToMinutes(450), equals(8)); // 7.5 minutes rounded up
+        expect(convertSecondsToMinutes(930),
+            equals(16)); // 15.5 minutes rounded up
+        expect(convertSecondsToMinutes(870),
+            equals(15)); // 14.5 minutes rounded up
+        expect(
+            convertSecondsToMinutes(450), equals(8)); // 7.5 minutes rounded up
       });
 
       test('should validate edge cases for expiration hours', () {

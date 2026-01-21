@@ -48,7 +48,8 @@ class _AddLightningInvoiceScreenState
                   decoration: BoxDecoration(
                     color: AppTheme.backgroundCard,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                    border:
+                        Border.all(color: Colors.white.withValues(alpha: 0.1)),
                   ),
                   child: AddLightningInvoiceWidget(
                     controller: invoiceController,

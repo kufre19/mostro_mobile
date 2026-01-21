@@ -32,9 +32,11 @@ class MessageInput extends ConsumerStatefulWidget {
 class _MessageInputState extends ConsumerState<MessageInput> {
   final TextEditingController _textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
-  final EncryptedFileUploadService _fileUploadService = EncryptedFileUploadService();
-  final EncryptedImageUploadService _imageUploadService = EncryptedImageUploadService();
-  
+  final EncryptedFileUploadService _fileUploadService =
+      EncryptedFileUploadService();
+  final EncryptedImageUploadService _imageUploadService =
+      EncryptedImageUploadService();
+
   bool _isUploadingFile = false; // For loading indicator
 
   @override
@@ -51,7 +53,7 @@ class _MessageInputState extends ConsumerState<MessageInput> {
     _textController.dispose();
     super.dispose();
   }
-  
+
   // Handle focus changes to detect keyboard visibility
   void _onFocusChange() {
     if (_focusNode.hasFocus && widget.selectedInfoType != null) {
@@ -63,9 +65,7 @@ class _MessageInputState extends ConsumerState<MessageInput> {
   void _sendMessage() {
     final text = _textController.text.trim();
     if (text.isNotEmpty) {
-      ref
-          .read(chatRoomsProvider(widget.orderId).notifier)
-          .sendMessage(text);
+      ref.read(chatRoomsProvider(widget.orderId).notifier).sendMessage(text);
       _textController.clear();
     }
   }
@@ -89,20 +89,20 @@ class _MessageInputState extends ConsumerState<MessageInput> {
       if (result != null && result.files.single.path != null) {
         final file = File(result.files.single.path!);
         final filename = result.files.single.name;
-        
+
         // Show confirmation dialog before uploading
         final shouldUpload = await _showFileConfirmationDialog(filename);
         if (!shouldUpload) {
           return; // User cancelled, exit without uploading
         }
-        
+
         // Get shared key for this order/chat
         final sharedKey = await _getSharedKeyForOrder(widget.orderId);
-        
+
         // Determine if this is an image or other file type
         final fileData = await file.readAsBytes();
         final isImage = await _isImageFile(fileData, filename);
-        
+
         if (isImage) {
           // Handle as image with light sanitization
           final uploadResult = await _imageUploadService.uploadEncryptedImage(
@@ -110,7 +110,7 @@ class _MessageInputState extends ConsumerState<MessageInput> {
             sharedKey: sharedKey,
             filename: filename,
           );
-          
+
           // Send encrypted image message via NIP-59
           await _sendEncryptedImageMessage(uploadResult);
         } else {
@@ -119,7 +119,7 @@ class _MessageInputState extends ConsumerState<MessageInput> {
             file: file,
             sharedKey: sharedKey,
           );
-          
+
           // Send encrypted file message via NIP-59
           await _sendEncryptedFileMessage(uploadResult);
         }
@@ -153,7 +153,7 @@ class _MessageInputState extends ConsumerState<MessageInput> {
       return false;
     }
   }
-  
+
   // Get MIME type for a file
   Future<String?> _getMimeType(Uint8List fileData, String filename) async {
     // First try magic bytes detection
@@ -161,7 +161,7 @@ class _MessageInputState extends ConsumerState<MessageInput> {
     if (mimeFromBytes != null) {
       return mimeFromBytes;
     }
-    
+
     // Fallback to extension-based detection
     return lookupMimeType(filename);
   }
@@ -174,32 +174,32 @@ class _MessageInputState extends ConsumerState<MessageInput> {
   }
 
   // Send encrypted file message via NIP-59 gift wrap
-  Future<void> _sendEncryptedFileMessage(EncryptedFileUploadResult result) async {
+  Future<void> _sendEncryptedFileMessage(
+      EncryptedFileUploadResult result) async {
     try {
       // Create JSON content for the rumor
       final fileMessageJson = jsonEncode(result.toJson());
-      
+
       // Send via existing chat system (will be wrapped in NIP-59)
       await ref
           .read(chatRoomsProvider(widget.orderId).notifier)
           .sendMessage(fileMessageJson);
-          
     } catch (e) {
       throw Exception('Failed to send encrypted file message: $e');
     }
   }
 
   // Send encrypted image message via NIP-59 gift wrap
-  Future<void> _sendEncryptedImageMessage(EncryptedImageUploadResult result) async {
+  Future<void> _sendEncryptedImageMessage(
+      EncryptedImageUploadResult result) async {
     try {
       // Create JSON content for the rumor
       final imageMessageJson = jsonEncode(result.toJson());
-      
+
       // Send via existing chat system (will be wrapped in NIP-59)
       await ref
           .read(chatRoomsProvider(widget.orderId).notifier)
           .sendMessage(imageMessageJson);
-          
     } catch (e) {
       throw Exception('Failed to send encrypted image message: $e');
     }
@@ -232,7 +232,8 @@ class _MessageInputState extends ConsumerState<MessageInput> {
               ),
               const SizedBox(height: 12),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color: AppTheme.backgroundInput,
                   borderRadius: BorderRadius.circular(8),
@@ -265,7 +266,8 @@ class _MessageInputState extends ConsumerState<MessageInput> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.mostroGreen,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
               child: Text(
                 S.of(context)!.send,
@@ -280,7 +282,7 @@ class _MessageInputState extends ConsumerState<MessageInput> {
         );
       },
     );
-    
+
     return result ?? false; // If dialog is dismissed, treat as cancelled
   }
 
@@ -317,7 +319,8 @@ class _MessageInputState extends ConsumerState<MessageInput> {
                     color: AppTheme.backgroundDark,
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: AppTheme.textSecondary.withValues(alpha: 0.3), // 0.3 opacity
+                      color: AppTheme.textSecondary
+                          .withValues(alpha: 0.3), // 0.3 opacity
                       width: 1,
                     ),
                   ),
@@ -359,10 +362,11 @@ class _MessageInputState extends ConsumerState<MessageInput> {
                       decoration: InputDecoration(
                         hintText: S.of(context)!.typeAMessage,
                         hintStyle: TextStyle(
-                            color: AppTheme.textSecondary.withValues(alpha: 0.6), // 0.6 opacity
+                            color: AppTheme.textSecondary
+                                .withValues(alpha: 0.6), // 0.6 opacity
                             fontSize: 15),
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
                         border: InputBorder.none,
                         enabledBorder: InputBorder.none,
                         focusedBorder: InputBorder.none,

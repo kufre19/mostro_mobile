@@ -35,11 +35,11 @@ class _AddLightningInvoiceWidgetState extends State<AddLightningInvoiceWidget> {
       children: [
         Text(
           S.of(context)!.pleaseEnterLightningInvoiceFor(
-            widget.amount.toString(),
-            widget.fiatCode,
-            widget.fiatAmount,
-            widget.orderId,
-          ),
+                widget.amount.toString(),
+                widget.fiatCode,
+                widget.fiatAmount,
+                widget.orderId,
+              ),
           style: const TextStyle(
             color: AppTheme.textPrimary,
             fontSize: 16,
@@ -64,7 +64,8 @@ class _AddLightningInvoiceWidgetState extends State<AddLightningInvoiceWidget> {
               hintText: S.of(context)!.enterInvoiceHere,
               hintStyle: const TextStyle(color: AppTheme.textSecondary),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               alignLabelWithHint: true,
             ),
             maxLines: 6,
@@ -99,7 +100,8 @@ class _AddLightningInvoiceWidgetState extends State<AddLightningInvoiceWidget> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                 ),
                 child: Text(
                   S.of(context)!.submit,

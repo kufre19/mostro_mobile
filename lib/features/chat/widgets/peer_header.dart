@@ -26,7 +26,8 @@ class PeerHeader extends ConsumerWidget {
       decoration: BoxDecoration(
         color: AppTheme.backgroundDark,
         border: Border(
-          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.1), width: 0.5),
+          bottom: BorderSide(
+              color: Colors.white.withValues(alpha: 0.1), width: 0.5),
         ),
       ),
       child: Row(

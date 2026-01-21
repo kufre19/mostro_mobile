@@ -60,8 +60,7 @@ class EncryptedFileUploadResult {
 
 class EncryptedFileUploadService {
   final Logger _logger = Logger();
-  
-  
+
   EncryptedFileUploadService();
 
   /// Upload encrypted file with complete validation and encryption
@@ -70,36 +69,33 @@ class EncryptedFileUploadService {
     required Uint8List sharedKey,
   }) async {
     _logger.i('🔒 Starting encrypted file upload process...');
-    
+
     try {
       // 1. Validate file (size, type, security)
       final validationResult = await FileValidationService.validateFile(file);
-      
+
       _logger.i(
-        'File validated: ${validationResult.fileType} (${validationResult.mimeType}), '
-        '${validationResult.filename}, ${_formatFileSize(validationResult.size)}'
-      );
-      
+          'File validated: ${validationResult.fileType} (${validationResult.mimeType}), '
+          '${validationResult.filename}, ${_formatFileSize(validationResult.size)}');
+
       // 2. Encrypt with ChaCha20-Poly1305
       final encryptionResult = EncryptionService.encryptChaCha20Poly1305(
         key: sharedKey,
         plaintext: validationResult.validatedData,
       );
-      
+
       final encryptedBlob = encryptionResult.toBlob();
-      _logger.i(
-        '🔐 File encrypted successfully: ${encryptedBlob.length} bytes '
-        '(nonce: ${encryptionResult.nonce.length}B, '
-        'data: ${encryptionResult.encryptedData.length}B, '
-        'tag: ${encryptionResult.authTag.length}B)'
-      );
-      
+      _logger.i('🔐 File encrypted successfully: ${encryptedBlob.length} bytes '
+          '(nonce: ${encryptionResult.nonce.length}B, '
+          'data: ${encryptionResult.encryptedData.length}B, '
+          'tag: ${encryptionResult.authTag.length}B)');
+
       // 3. Upload encrypted blob to Blossom
       final blossomUrl = await _uploadWithRetry(
         encryptedBlob,
         'application/octet-stream', // Always octet-stream for encrypted data
       );
-      
+
       final result = EncryptedFileUploadResult(
         blossomUrl: blossomUrl,
         nonce: _bytesToHex(encryptionResult.nonce),
@@ -109,13 +105,12 @@ class EncryptedFileUploadService {
         filename: validationResult.filename,
         encryptedSize: encryptedBlob.length,
       );
-      
+
       _logger.i('🎉 Encrypted file upload completed successfully!');
       _logger.i('📎 File: ${result.filename} (${result.fileType})');
       _logger.i('🔗 Blossom URL: ${result.blossomUrl}');
-      
+
       return result;
-      
     } catch (e) {
       _logger.e('❌ Encrypted file upload failed: $e');
       rethrow;
@@ -130,30 +125,31 @@ class EncryptedFileUploadService {
   }) async {
     _logger.i('🔓 Starting encrypted file download and decryption...');
     _logger.d('URL: $blossomUrl');
-    
+
     try {
       // 1. Download encrypted blob from Blossom
       final encryptedBlob = await _downloadFromBlossom(blossomUrl);
       _logger.i('📥 Downloaded encrypted blob: ${encryptedBlob.length} bytes');
-      
+
       // 2. Decrypt with ChaCha20-Poly1305
       final decryptedFile = EncryptionService.decryptFromBlob(
         key: sharedKey,
         blob: encryptedBlob,
       );
-      
-      _logger.i('🔓 File decrypted successfully: ${decryptedFile.length} bytes');
-      
+
+      _logger
+          .i('🔓 File decrypted successfully: ${decryptedFile.length} bytes');
+
       return decryptedFile;
-      
     } catch (e) {
       _logger.e('❌ File download/decryption failed: $e');
       rethrow;
     }
   }
-  
+
   /// Upload with automatic retry to multiple servers
-  Future<String> _uploadWithRetry(Uint8List encryptedData, String mimeType) async {
+  Future<String> _uploadWithRetry(
+      Uint8List encryptedData, String mimeType) async {
     return BlossomUploadHelper.uploadWithRetry(encryptedData, mimeType);
   }
 
@@ -161,12 +157,12 @@ class EncryptedFileUploadService {
   Future<Uint8List> _downloadFromBlossom(String blossomUrl) async {
     return await BlossomDownloadService.downloadWithRetry(blossomUrl);
   }
-  
+
   /// Convert bytes to hex string
   String _bytesToHex(Uint8List bytes) {
     return bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
   }
-  
+
   /// Format file size in human-readable format
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '${bytes}B';
@@ -174,4 +170,3 @@ class EncryptedFileUploadService {
     return '${(bytes / (1024 * 1024)).toStringAsFixed(1)}MB';
   }
 }
-

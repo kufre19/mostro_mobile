@@ -92,8 +92,8 @@ class _AddOrderButtonState extends State<AddOrderButton>
                             ),
                             icon: const SizedBox(width: 16, height: 16),
                             label: Text(S.of(context)!.buy,
-                                style:
-                                    const TextStyle(fontWeight: FontWeight.bold)),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
                           ),
                           if (_isMenuOpen)
                             const Positioned(
@@ -125,8 +125,8 @@ class _AddOrderButtonState extends State<AddOrderButton>
                             ),
                             icon: const SizedBox(width: 16, height: 16),
                             label: Text(S.of(context)!.sell,
-                                style:
-                                    const TextStyle(fontWeight: FontWeight.bold)),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
                           ),
                           if (_isMenuOpen)
                             const Positioned(

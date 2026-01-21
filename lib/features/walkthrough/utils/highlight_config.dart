@@ -26,6 +26,7 @@ class HighlightConfig {
   );
 
   static const createOffer = HighlightConfig(
-    pattern: r'\b(create your own offer|crear tu propia oferta|creare la tua offerta)\b',
+    pattern:
+        r'\b(create your own offer|crear tu propia oferta|creare la tua offerta)\b',
   );
 }

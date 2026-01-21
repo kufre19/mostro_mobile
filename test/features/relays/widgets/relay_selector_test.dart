@@ -12,7 +12,7 @@
 
 void main() {
   // TODO: Update tests for new RelaySelector UX - old showAddDialog tests no longer relevant
-  
+
   // Tests commented out since we changed from showAddDialog to new blacklist toggle UX
   /*
   group('RelaySelector Dialog Integration Tests - DISABLED', () {

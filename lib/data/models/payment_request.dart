@@ -24,7 +24,7 @@ class PaymentRequest implements Payload {
 
     values.add(order?.toJson());
     values.add(lnInvoice);
-    values.add(amount);  // Always add amount, even if null
+    values.add(amount); // Always add amount, even if null
 
     final result = {typeKey: values};
 
@@ -34,7 +34,8 @@ class PaymentRequest implements Payload {
   factory PaymentRequest.fromJson(List<dynamic> json) {
     try {
       if (json.length < 2) {
-        throw FormatException('Invalid JSON format: insufficient elements (expected at least 2, got ${json.length})');
+        throw FormatException(
+            'Invalid JSON format: insufficient elements (expected at least 2, got ${json.length})');
       }
 
       // Parse order
@@ -51,7 +52,8 @@ class PaymentRequest implements Payload {
       // Parse lnInvoice
       final lnInvoice = json[1];
       if (lnInvoice != null && lnInvoice is! String) {
-        throw FormatException('Invalid type for lnInvoice: expected String, got ${lnInvoice.runtimeType}');
+        throw FormatException(
+            'Invalid type for lnInvoice: expected String, got ${lnInvoice.runtimeType}');
       }
       if (lnInvoice is String && lnInvoice.isEmpty) {
         throw FormatException('lnInvoice cannot be empty string');
@@ -68,7 +70,8 @@ class PaymentRequest implements Payload {
             amount = int.tryParse(amountValue) ??
                 (throw FormatException('Invalid amount format: $amountValue'));
           } else {
-            throw FormatException('Invalid amount type: ${amountValue.runtimeType}');
+            throw FormatException(
+                'Invalid amount type: ${amountValue.runtimeType}');
           }
           if (amount < 0) {
             throw FormatException('Amount cannot be negative: $amount');
@@ -88,7 +91,7 @@ class PaymentRequest implements Payload {
 
   @override
   String get type => 'payment_request';
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -97,10 +100,10 @@ class PaymentRequest implements Payload {
         other.lnInvoice == lnInvoice &&
         other.amount == amount;
   }
-  
+
   @override
   int get hashCode => Object.hash(order, lnInvoice, amount);
-  
+
   @override
   String toString() {
     return 'PaymentRequest(order: $order, lnInvoice: $lnInvoice, amount: $amount)';

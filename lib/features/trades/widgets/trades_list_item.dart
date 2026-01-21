@@ -40,9 +40,7 @@ class TradesListItem extends ConsumerWidget {
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         decoration: BoxDecoration(
-
           color: AppTheme.dark1,
-
           borderRadius: BorderRadius.circular(12.0),
         ),
         child: Padding(
@@ -80,11 +78,10 @@ class TradesListItem extends ConsumerWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color:
-                                  double.tryParse(trade.premium!) != null &&
-                                          double.parse(trade.premium!) > 0
-                                      ? AppTheme.premiumPositiveChip
-                                      : AppTheme.premiumNegativeChip,
+                              color: double.tryParse(trade.premium!) != null &&
+                                      double.parse(trade.premium!) > 0
+                                  ? AppTheme.premiumPositiveChip
+                                  : AppTheme.premiumNegativeChip,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -164,10 +161,8 @@ class TradesListItem extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-
         color: isCreator ? AppTheme.createdByYouChip : AppTheme.takenByYouChip,
         borderRadius: BorderRadius.circular(12),
-
       ),
       child: Text(
         isCreator ? S.of(context)!.createdByYou : S.of(context)!.takenByYou,
@@ -187,7 +182,6 @@ class TradesListItem extends ConsumerWidget {
 
     switch (status) {
       case Status.active:
-
         backgroundColor =
             AppTheme.statusActiveBackground.withValues(alpha: 0.3);
         textColor = AppTheme.statusActiveText;

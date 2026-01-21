@@ -20,18 +20,20 @@ class RelayListEvent {
 
     // Extract relay URLs from 'r' tags
     final relays = event.tags
-        ?.where((tag) => tag.isNotEmpty && tag[0] == 'r')
-        .where((tag) => tag.length >= 2)
-        .map((tag) => tag[1])
-        .where((url) => url.isNotEmpty)
-        .toList() ?? <String>[];
+            ?.where((tag) => tag.isNotEmpty && tag[0] == 'r')
+            .where((tag) => tag.length >= 2)
+            .map((tag) => tag[1])
+            .where((url) => url.isNotEmpty)
+            .toList() ??
+        <String>[];
 
     // Handle different possible types for createdAt
     DateTime publishedAt;
     if (event.createdAt is DateTime) {
       publishedAt = event.createdAt as DateTime;
     } else if (event.createdAt is int) {
-      publishedAt = DateTime.fromMillisecondsSinceEpoch((event.createdAt as int) * 1000);
+      publishedAt =
+          DateTime.fromMillisecondsSinceEpoch((event.createdAt as int) * 1000);
     } else {
       publishedAt = DateTime.now(); // Fallback to current time
     }
@@ -49,7 +51,8 @@ class RelayListEvent {
     return relays
         .where((url) => url.startsWith('wss://') || url.startsWith('ws://'))
         .map((url) => url.trim())
-        .map((url) => url.endsWith('/') ? url.substring(0, url.length - 1) : url)
+        .map(
+            (url) => url.endsWith('/') ? url.substring(0, url.length - 1) : url)
         .toList();
   }
 

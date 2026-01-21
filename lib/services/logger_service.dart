@@ -42,8 +42,10 @@ String cleanMessage(String message) {
       .replaceAll(RegExp(r'[┌┐└┘├┤─│┬┴┼╭╮╰╯╔╗╚╝╠╣═║╦╩╬━┃┄├]'), '')
       .replaceAll(RegExp(r'[\u{1F300}-\u{1F9FF}]', unicode: true), '')
       .replaceAll(RegExp(r'nsec[0-9a-z]+'), '[PRIVATE_KEY]')
-      .replaceAll(RegExp(r'"privateKey"\s*:\s*"[^"]*"'), '"privateKey":"[REDACTED]"')
-      .replaceAll(RegExp(r'"mnemonic"\s*:\s*"[^"]*"'), '"mnemonic":"[REDACTED]"')
+      .replaceAll(
+          RegExp(r'"privateKey"\s*:\s*"[^"]*"'), '"privateKey":"[REDACTED]"')
+      .replaceAll(
+          RegExp(r'"mnemonic"\s*:\s*"[^"]*"'), '"mnemonic":"[REDACTED]"')
       .replaceAll(RegExp(r'[^A-Za-z0-9\s.:,!?\-_/\[\]]'), ' ')
       .replaceAll(RegExp(r'\s+'), ' ');
   return cleaned.trim();
@@ -82,12 +84,18 @@ void addLogFromIsolate(Map<String, dynamic> logData) {
 
 Level _levelFromString(String level) {
   switch (level) {
-    case 'error': return Level.error;
-    case 'warning': return Level.warning;
-    case 'info': return Level.info;
-    case 'debug': return Level.debug;
-    case 'trace': return Level.trace;
-    default: return Level.debug;
+    case 'error':
+      return Level.error;
+    case 'warning':
+      return Level.warning;
+    case 'info':
+      return Level.info;
+    case 'debug':
+      return Level.debug;
+    case 'trace':
+      return Level.trace;
+    default:
+      return Level.debug;
   }
 }
 
@@ -226,7 +234,9 @@ class SimplePrinter extends LogPrinter {
         continue;
       }
 
-      var match = RegExp(r'#\d+\s+\S+\s+\((?:package:[\w_]+/)?(?:.*/)(\w+)\.dart:(\d+)').firstMatch(line);
+      var match =
+          RegExp(r'#\d+\s+\S+\s+\((?:package:[\w_]+/)?(?:.*/)(\w+)\.dart:(\d+)')
+              .firstMatch(line);
       if (match != null) {
         return {
           'service': match.group(1) ?? 'Unknown',
@@ -234,7 +244,8 @@ class SimplePrinter extends LogPrinter {
         };
       }
 
-      match = RegExp(r'package:[\w_]+/(?:.*/)(\w+)\.dart:(\d+)').firstMatch(line);
+      match =
+          RegExp(r'package:[\w_]+/(?:.*/)(\w+)\.dart:(\d+)').firstMatch(line);
       if (match != null) {
         return {
           'service': match.group(1) ?? 'Unknown',
@@ -296,7 +307,8 @@ class IsolateLogOutput extends LogOutput {
 
     if (sendPort != null) {
       final printer = SimplePrinter();
-      final serviceAndLine = printer.extractFromStackTrace(event.origin.stackTrace);
+      final serviceAndLine =
+          printer.extractFromStackTrace(event.origin.stackTrace);
 
       final rawMessage = event.origin.message.toString();
       final sanitizedMessage = cleanMessage(rawMessage);

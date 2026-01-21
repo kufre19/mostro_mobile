@@ -5,40 +5,41 @@ import 'package:mostro_mobile/data/models/dispute.dart';
 /// Mock data for disputes UI development and testing
 /// This file can be easily removed when real dispute data is implemented
 class DisputeMockData {
-  
   /// Mock dispute list for the disputes screen - only available in debug mode
-  static List<DisputeData> get mockDisputes => kDebugMode ? [
-    DisputeData(
-      disputeId: 'dispute_001',
-      orderId: 'order_123',
-      createdAt: DateTime.now().subtract(const Duration(minutes: 30)),
-      status: 'initiated',
-      descriptionKey: DisputeDescriptionKey.initiatedByUser,
-      counterparty: null,
-      isCreator: true,
-      userRole: UserRole.buyer,
-    ),
-    DisputeData(
-      disputeId: 'dispute_002', 
-      orderId: 'order_456',
-      createdAt: DateTime.now().subtract(const Duration(hours: 6)),
-      status: 'in-progress',
-      descriptionKey: DisputeDescriptionKey.inProgress,
-      counterparty: 'admin_123',
-      isCreator: false,
-      userRole: UserRole.seller,
-    ),
-    DisputeData(
-      disputeId: 'dispute_003',
-      orderId: 'order_789', 
-      createdAt: DateTime.now().subtract(const Duration(days: 2)),
-      status: 'resolved',
-      descriptionKey: DisputeDescriptionKey.resolved,
-      counterparty: 'admin_123',
-      isCreator: null, // Unknown creator state for resolved dispute
-      userRole: UserRole.buyer,
-    ),
-  ] : <DisputeData>[];
+  static List<DisputeData> get mockDisputes => kDebugMode
+      ? [
+          DisputeData(
+            disputeId: 'dispute_001',
+            orderId: 'order_123',
+            createdAt: DateTime.now().subtract(const Duration(minutes: 30)),
+            status: 'initiated',
+            descriptionKey: DisputeDescriptionKey.initiatedByUser,
+            counterparty: null,
+            isCreator: true,
+            userRole: UserRole.buyer,
+          ),
+          DisputeData(
+            disputeId: 'dispute_002',
+            orderId: 'order_456',
+            createdAt: DateTime.now().subtract(const Duration(hours: 6)),
+            status: 'in-progress',
+            descriptionKey: DisputeDescriptionKey.inProgress,
+            counterparty: 'admin_123',
+            isCreator: false,
+            userRole: UserRole.seller,
+          ),
+          DisputeData(
+            disputeId: 'dispute_003',
+            orderId: 'order_789',
+            createdAt: DateTime.now().subtract(const Duration(days: 2)),
+            status: 'resolved',
+            descriptionKey: DisputeDescriptionKey.resolved,
+            counterparty: 'admin_123',
+            isCreator: null, // Unknown creator state for resolved dispute
+            userRole: UserRole.buyer,
+          ),
+        ]
+      : <DisputeData>[];
 
   /// Mock dispute details based on dispute ID
   static DisputeData? getDisputeById(String disputeId) {
@@ -57,33 +58,39 @@ class DisputeMockData {
     if (status == 'initiated') {
       return [];
     }
-    
+
     if (status == 'resolved') {
       return [
         DisputeChat(
           id: '1',
-          message: 'Hello, I need help with this order. The seller hasn\'t responded to my messages.',
+          message:
+              'Hello, I need help with this order. The seller hasn\'t responded to my messages.',
           timestamp: DateTime.now().subtract(const Duration(days: 3, hours: 2)),
           isFromUser: true,
         ),
         DisputeChat(
           id: '2',
-          message: 'I understand your concern. Let me review the order details and contact the seller.',
-          timestamp: DateTime.now().subtract(const Duration(days: 3, hours: 1, minutes: 45)),
+          message:
+              'I understand your concern. Let me review the order details and contact the seller.',
+          timestamp: DateTime.now()
+              .subtract(const Duration(days: 3, hours: 1, minutes: 45)),
           isFromUser: false,
           adminPubkey: 'admin_123',
         ),
         DisputeChat(
           id: '3',
-          message: 'I\'ve contacted the seller and they confirmed they will complete the payment within 2 hours.',
-          timestamp: DateTime.now().subtract(const Duration(days: 2, hours: 12)),
+          message:
+              'I\'ve contacted the seller and they confirmed they will complete the payment within 2 hours.',
+          timestamp:
+              DateTime.now().subtract(const Duration(days: 2, hours: 12)),
           isFromUser: false,
           adminPubkey: 'admin_123',
         ),
         DisputeChat(
           id: '4',
           message: 'Thank you for your help. I\'ll wait for the payment.',
-          timestamp: DateTime.now().subtract(const Duration(days: 2, hours: 11, minutes: 30)),
+          timestamp: DateTime.now()
+              .subtract(const Duration(days: 2, hours: 11, minutes: 30)),
           isFromUser: true,
         ),
       ];
@@ -92,20 +99,24 @@ class DisputeMockData {
       return [
         DisputeChat(
           id: '1',
-          message: 'Hello, I need help with this order. The seller hasn\'t responded to my messages.',
+          message:
+              'Hello, I need help with this order. The seller hasn\'t responded to my messages.',
           timestamp: DateTime.now().subtract(const Duration(hours: 2)),
           isFromUser: true,
         ),
         DisputeChat(
           id: '2',
-          message: 'I understand your concern. Let me review the order details and contact the seller.',
-          timestamp: DateTime.now().subtract(const Duration(hours: 1, minutes: 45)),
+          message:
+              'I understand your concern. Let me review the order details and contact the seller.',
+          timestamp:
+              DateTime.now().subtract(const Duration(hours: 1, minutes: 45)),
           isFromUser: false,
           adminPubkey: 'admin_123',
         ),
         DisputeChat(
           id: '3',
-          message: 'Thank you for your patience. I\'m working on resolving this issue.',
+          message:
+              'Thank you for your patience. I\'m working on resolving this issue.',
           timestamp: DateTime.now().subtract(const Duration(minutes: 30)),
           isFromUser: false,
           adminPubkey: 'admin_123',
@@ -136,7 +147,7 @@ class DisputeMockData {
     required Map<String, dynamic> orderDetails,
   }) {
     final newDisputeId = 'dispute_${DateTime.now().millisecondsSinceEpoch}';
-    
+
     // In a real implementation, this would save to database
     // For now, we just return the ID
     return newDisputeId;

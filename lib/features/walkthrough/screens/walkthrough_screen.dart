@@ -178,7 +178,7 @@ class _WalkthroughScreenState extends ConsumerState<WalkthroughScreen> {
   @override
   Widget build(BuildContext context) {
     final firstRunState = ref.watch(firstRunProvider);
-    
+
     return firstRunState.when(
       data: (isFirstRun) {
         // If this is not the first run, redirect to home
@@ -190,7 +190,7 @@ class _WalkthroughScreenState extends ConsumerState<WalkthroughScreen> {
           });
           return const SizedBox.shrink();
         }
-        
+
         // Show walkthrough for first run
         final theme = Theme.of(context);
         return SafeArea(

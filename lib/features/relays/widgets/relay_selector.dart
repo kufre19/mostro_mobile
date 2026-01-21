@@ -25,7 +25,7 @@ class RelaySelector extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 24),
-        
+
         // Relay list
         if (mostroRelays.isEmpty)
           Container(
@@ -58,9 +58,9 @@ class RelaySelector extends ConsumerWidget {
           ...mostroRelays.map((relayInfo) {
             return _buildRelayItem(context, ref, relayInfo);
           }),
-        
+
         const SizedBox(height: 24),
-        
+
         // Add relay button - aligned to the right
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -94,7 +94,8 @@ class RelaySelector extends ConsumerWidget {
     );
   }
 
-  Widget _buildRelayItem(BuildContext context, WidgetRef ref, MostroRelayInfo relayInfo) {
+  Widget _buildRelayItem(
+      BuildContext context, WidgetRef ref, MostroRelayInfo relayInfo) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -115,7 +116,7 @@ class RelaySelector extends ConsumerWidget {
             ),
           ),
           const SizedBox(width: 12),
-          
+
           // Relay URL
           Expanded(
             child: Text(
@@ -127,9 +128,9 @@ class RelaySelector extends ConsumerWidget {
               ),
             ),
           ),
-          
+
           const SizedBox(width: 12),
-          
+
           // Control - Switch for Mostro/default relays, Delete button for user relays
           relayInfo.source == RelaySource.user
               ? _buildDeleteButton(context, ref, relayInfo)
@@ -142,7 +143,8 @@ class RelaySelector extends ConsumerWidget {
     );
   }
 
-  Widget _buildDeleteButton(BuildContext context, WidgetRef ref, MostroRelayInfo relayInfo) {
+  Widget _buildDeleteButton(
+      BuildContext context, WidgetRef ref, MostroRelayInfo relayInfo) {
     return Container(
       width: 140,
       padding: const EdgeInsets.only(right: 16),
@@ -164,9 +166,10 @@ class RelaySelector extends ConsumerWidget {
     );
   }
 
-  Widget _buildRelaySwitch(BuildContext context, WidgetRef ref, MostroRelayInfo relayInfo) {
+  Widget _buildRelaySwitch(
+      BuildContext context, WidgetRef ref, MostroRelayInfo relayInfo) {
     final isActive = relayInfo.isActive;
-    
+
     return GestureDetector(
       onTap: () async {
         await _handleRelayToggle(context, ref, relayInfo);
@@ -200,9 +203,10 @@ class RelaySelector extends ConsumerWidget {
   }
 
   /// Show confirmation dialog for deleting user relay
-  Future<void> _showDeleteUserRelayDialog(BuildContext context, WidgetRef ref, MostroRelayInfo relayInfo) async {
+  Future<void> _showDeleteUserRelayDialog(
+      BuildContext context, WidgetRef ref, MostroRelayInfo relayInfo) async {
     final relaysNotifier = ref.read(relaysProvider.notifier);
-    
+
     // Check if this would leave no active relays
     if (relaysNotifier.wouldLeaveNoActiveRelays(relayInfo.url)) {
       await showDialog(
@@ -230,7 +234,7 @@ class RelaySelector extends ConsumerWidget {
       );
       return; // Exit early - don't proceed with deletion
     }
-    
+
     // If not the last relay, show confirmation dialog
     final shouldDelete = await showDialog<bool>(
       context: context,
@@ -272,25 +276,28 @@ class RelaySelector extends ConsumerWidget {
   }
 
   /// Handle relay toggle with safety checks and confirmation dialogs
-  Future<void> _handleRelayToggle(BuildContext context, WidgetRef ref, MostroRelayInfo relayInfo) async {
+  Future<void> _handleRelayToggle(
+      BuildContext context, WidgetRef ref, MostroRelayInfo relayInfo) async {
     final isCurrentlyBlacklisted = !relayInfo.isActive;
-    final isDefaultMostroRelay = relayInfo.url.startsWith('wss://relay.mostro.network');
+    final isDefaultMostroRelay =
+        relayInfo.url.startsWith('wss://relay.mostro.network');
     final relaysNotifier = ref.read(relaysProvider.notifier);
-    
+
     // Detect relay type (user vs mostro/default)
     final currentRelays = ref.read(relaysProvider);
     final relay = currentRelays.firstWhere(
-      (r) => r.url == relayInfo.url, 
+      (r) => r.url == relayInfo.url,
       orElse: () => Relay(url: ''), // Empty relay if not found
     );
-    final isUserRelay = relay.url.isNotEmpty && relay.source == RelaySource.user;
-    
+    final isUserRelay =
+        relay.url.isNotEmpty && relay.source == RelaySource.user;
+
     // If removing from blacklist, proceed directly
     if (isCurrentlyBlacklisted) {
       await relaysNotifier.toggleMostroRelayBlacklist(relayInfo.url);
       return;
     }
-    
+
     // Check if this would be the last active relay - BLOCK the action
     if (relaysNotifier.wouldLeaveNoActiveRelays(relayInfo.url)) {
       await showDialog(
@@ -320,7 +327,7 @@ class RelaySelector extends ConsumerWidget {
       );
       return; // Block the action - do NOT proceed
     }
-    
+
     // Handle deactivation based on relay type
     if (isUserRelay) {
       // User relay: Delete completely (no blacklisting needed)
@@ -359,7 +366,7 @@ class RelaySelector extends ConsumerWidget {
           );
         },
       );
-      
+
       // Proceed only if user confirmed
       if (shouldProceed == true) {
         await relaysNotifier.toggleMostroRelayBlacklist(relayInfo.url);
@@ -403,51 +410,59 @@ class RelaySelector extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: AppTheme.backgroundInput,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-                    ),
-                    child: TextField(
-                      controller: textController,
-                      enabled: !isLoading,
-                      style: const TextStyle(color: AppTheme.textPrimary),
-                      decoration: InputDecoration(
-                        labelText: S.of(context)!.addRelayDialogPlaceholder,
-                        labelStyle: const TextStyle(color: AppTheme.textSecondary),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        hintText: 'relay.example.com or wss://relay.example.com',
-                        hintStyle: const TextStyle(color: AppTheme.textSecondary),
-                        errorText: errorMessage,
-                        errorStyle: const TextStyle(color: Colors.red),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: AppTheme.backgroundInput,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.1)),
                       ),
-                      autofocus: true,
+                      child: TextField(
+                        controller: textController,
+                        enabled: !isLoading,
+                        style: const TextStyle(color: AppTheme.textPrimary),
+                        decoration: InputDecoration(
+                          labelText: S.of(context)!.addRelayDialogPlaceholder,
+                          labelStyle:
+                              const TextStyle(color: AppTheme.textSecondary),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 8),
+                          hintText:
+                              'relay.example.com or wss://relay.example.com',
+                          hintStyle:
+                              const TextStyle(color: AppTheme.textSecondary),
+                          errorText: errorMessage,
+                          errorStyle: const TextStyle(color: Colors.red),
+                        ),
+                        autofocus: true,
+                      ),
                     ),
-                  ),
-                  if (isLoading) ...[
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.cream1),
+                    if (isLoading) ...[
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppTheme.cream1),
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          S.of(context)!.addRelayDialogTesting,
-                          style: const TextStyle(color: AppTheme.textSecondary),
-                        ),
-                      ],
-                    ),
+                          const SizedBox(width: 12),
+                          Text(
+                            S.of(context)!.addRelayDialogTesting,
+                            style:
+                                const TextStyle(color: AppTheme.textSecondary),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
-                ],
                 ),
               ),
               actions: [
@@ -475,7 +490,8 @@ class RelaySelector extends ConsumerWidget {
 
                           // Capture context values before async operations
                           final localizations = S.of(context)!;
-                          final scaffoldMessenger = ScaffoldMessenger.of(context);
+                          final scaffoldMessenger =
+                              ScaffoldMessenger.of(context);
                           final navigator = Navigator.of(dialogContext);
 
                           setState(() {
@@ -484,13 +500,18 @@ class RelaySelector extends ConsumerWidget {
                           });
 
                           try {
-                            final result = await relaysNotifier.addRelayWithSmartValidation(
+                            final result = await relaysNotifier
+                                .addRelayWithSmartValidation(
                               input,
-                              errorOnlySecure: localizations.addRelayErrorOnlySecure,
+                              errorOnlySecure:
+                                  localizations.addRelayErrorOnlySecure,
                               errorNoHttp: localizations.addRelayErrorNoHttp,
-                              errorInvalidDomain: localizations.addRelayErrorInvalidDomain,
-                              errorAlreadyExists: localizations.addRelayErrorAlreadyExists,
-                              errorNotValid: localizations.addRelayErrorNotValid,
+                              errorInvalidDomain:
+                                  localizations.addRelayErrorInvalidDomain,
+                              errorAlreadyExists:
+                                  localizations.addRelayErrorAlreadyExists,
+                              errorNotValid:
+                                  localizations.addRelayErrorNotValid,
                             );
 
                             if (result.success) {
@@ -499,8 +520,10 @@ class RelaySelector extends ConsumerWidget {
                                 scaffoldMessenger.showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                      localizations.addRelaySuccessMessage(result.normalizedUrl!),
-                                      style: const TextStyle(color: Colors.white),
+                                      localizations.addRelaySuccessMessage(
+                                          result.normalizedUrl!),
+                                      style:
+                                          const TextStyle(color: Colors.white),
                                     ),
                                     backgroundColor: Colors.green,
                                   ),
@@ -525,7 +548,8 @@ class RelaySelector extends ConsumerWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 12),
                   ),
                   child: Text(
                     S.of(context)!.addRelayDialogAdd,

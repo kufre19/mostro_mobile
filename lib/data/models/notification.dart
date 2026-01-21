@@ -55,7 +55,7 @@ class NotificationModel {
       case Action.takeBuy:
       case Action.buyerTookOrder:
         return NotificationType.orderUpdate;
-      
+
       case Action.payInvoice:
       case Action.fiatSent:
       case Action.fiatSentOk:
@@ -72,7 +72,7 @@ class NotificationModel {
       case Action.purchaseCompleted:
       case Action.invoiceUpdated:
         return NotificationType.payment;
-      
+
       case Action.cancel:
       case Action.canceled:
       case Action.cooperativeCancelInitiatedByYou:
@@ -81,7 +81,7 @@ class NotificationModel {
       case Action.adminCancel:
       case Action.adminCanceled:
         return NotificationType.cancellation;
-      
+
       case Action.dispute:
       case Action.disputeInitiatedByYou:
       case Action.disputeInitiatedByPeer:
@@ -91,12 +91,12 @@ class NotificationModel {
       case Action.adminTakeDispute:
       case Action.adminTookDispute:
         return NotificationType.dispute;
-      
+
       case Action.rate:
       case Action.rateUser:
       case Action.rateReceived:
         return NotificationType.tradeUpdate;
-      
+
       case Action.sendDm:
         return NotificationType.message;
       case Action.cantDo:

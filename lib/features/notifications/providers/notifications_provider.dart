@@ -6,13 +6,14 @@ import 'package:mostro_mobile/features/notifications/notifiers/notifications_sta
 import 'package:mostro_mobile/shared/providers/notifications_history_repository_provider.dart';
 
 // Notification actions (shows toasts + saves to DB)
-final notificationActionsProvider = 
+final notificationActionsProvider =
     StateNotifierProvider<NotificationsNotifier, TemporaryNotificationsState>(
   (ref) => NotificationsNotifier(ref),
 );
 
 // Persistent notifications from database - single source of truth
-final notificationsHistoryProvider = StreamProvider<List<NotificationModel>>((ref) {
+final notificationsHistoryProvider =
+    StreamProvider<List<NotificationModel>>((ref) {
   final repository = ref.read(notificationsRepositoryProvider);
   return repository.watchNotifications();
 });
@@ -23,7 +24,8 @@ final notificationsDatabaseProvider = Provider((ref) {
 });
 
 // Current temporary notification state (for toasts/snackbars)
-final currentTemporaryNotificationProvider = Provider<TemporaryNotification>((ref) {
+final currentTemporaryNotificationProvider =
+    Provider<TemporaryNotification>((ref) {
   final state = ref.watch(notificationActionsProvider);
   return state.temporaryNotification;
 });
@@ -31,7 +33,7 @@ final currentTemporaryNotificationProvider = Provider<TemporaryNotification>((re
 final unreadNotificationsCountProvider = Provider<int>((ref) {
   final notifications = ref.watch(notificationsHistoryProvider);
   return notifications.when(
-    data: (notificationList) => 
+    data: (notificationList) =>
         notificationList.where((notification) => !notification.isRead).length,
     loading: () => 0,
     error: (_, __) => 0,

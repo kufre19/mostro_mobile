@@ -11,10 +11,7 @@ class DisputeStatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 8, 
-        vertical: 2
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: _getStatusBackgroundColor(status),
         borderRadius: BorderRadius.circular(12),

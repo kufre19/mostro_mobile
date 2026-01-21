@@ -22,7 +22,7 @@ final countdownTimeProvider = StreamProvider<DateTime>((ref) {
       timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         final now = DateTime.now();
         // Debounce: only emit if seconds have actually changed
-        if (lastEmittedTime == null || 
+        if (lastEmittedTime == null ||
             now.second != lastEmittedTime!.second ||
             now.minute != lastEmittedTime!.minute ||
             now.hour != lastEmittedTime!.hour) {

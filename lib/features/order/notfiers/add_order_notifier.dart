@@ -42,15 +42,17 @@ class AddOrderNotifier extends AbstractMostroNotifier {
                 }
               } else if (msg.payload is CantDo) {
                 // Cancel timer on ANY response from Mostro
-                AbstractMostroNotifier.cancelSessionTimeoutCleanupForRequestId(requestId);
-                
+                AbstractMostroNotifier.cancelSessionTimeoutCleanupForRequestId(
+                    requestId);
+
                 unawaited(handleEvent(msg));
-                
+
                 // Reset for retry if out_of_range_sats_amount or invalid_fiat_currency
                 final cantDo = msg.getPayload<CantDo>();
                 if (cantDo?.cantDoReason == CantDoReason.outOfRangeSatsAmount) {
                   _resetForRetry();
-                } else if (cantDo?.cantDoReason == CantDoReason.invalidFiatCurrency) {
+                } else if (cantDo?.cantDoReason ==
+                    CantDoReason.invalidFiatCurrency) {
                   _cleanupSessionAndNavigateBack();
                 }
               }
@@ -66,7 +68,7 @@ class AddOrderNotifier extends AbstractMostroNotifier {
   Future<void> _confirmOrder(MostroMessage message) async {
     // Cancel timeout timer - order was successfully created
     AbstractMostroNotifier.cancelSessionTimeoutCleanupForRequestId(requestId);
-    
+
     state = state.updateWith(message);
     session.orderId = message.id;
     ref.read(sessionNotifierProvider.notifier).saveSession(session);
@@ -89,28 +91,30 @@ class AddOrderNotifier extends AbstractMostroNotifier {
       requestId: requestId,
       role: order.kind == OrderType.buy ? Role.buyer : Role.seller,
     );
-    
+
     // Start 10s timeout cleanup timer for create orders
-    AbstractMostroNotifier.startSessionTimeoutCleanupForRequestId(requestId, ref);
-    
+    AbstractMostroNotifier.startSessionTimeoutCleanupForRequestId(
+        requestId, ref);
+
     await mostroService.submitOrder(message);
     state = state.updateWith(message);
   }
 
   /// Reset notifier state for retry after out_of_range_sats_amount error
   void _resetForRetry() {
-    logger.i('Resetting AddOrderNotifier for retry after out_of_range_sats_amount');
-    
+    logger.i(
+        'Resetting AddOrderNotifier for retry after out_of_range_sats_amount');
+
     // Generate new requestId for next attempt
     requestId = _requestIdFromOrderId(orderId);
-    
+
     // Reset state to initial clean state
     state = OrderState(
       action: Action.newOrder,
       status: Status.pending,
       order: null,
     );
-    
+
     // Re-subscribe with new requestId
     subscription?.close();
     subscribe();
@@ -118,18 +122,21 @@ class AddOrderNotifier extends AbstractMostroNotifier {
 
   /// Clean up session and navigate back for invalid_fiat_currency error
   void _cleanupSessionAndNavigateBack() {
-    logger.i('Cleaning up session and navigating back after invalid_fiat_currency');
-    
+    logger.i(
+        'Cleaning up session and navigating back after invalid_fiat_currency');
+
     // Delete the session from SessionNotifier
-    ref.read(sessionNotifierProvider.notifier).deleteSessionByRequestId(requestId);
-    
+    ref
+        .read(sessionNotifierProvider.notifier)
+        .deleteSessionByRequestId(requestId);
+
     // Navigate back to home/order book
     ref.read(navigationProvider.notifier).go('/');
-    
+
     // Invalidate this provider to clean up
     ref.invalidateSelf();
   }
-  
+
   @override
   void dispose() {
     // Cancel timer for requestId when notifier is disposed

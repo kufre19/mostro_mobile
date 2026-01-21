@@ -192,9 +192,8 @@ class Order implements Payload {
       paymentMethod: event.paymentMethods.join(','),
       premium: event.premium as int,
       createdAt: event.createdAt as int,
-      expiresAt: event.expiresAt != null
-          ? int.tryParse(event.expiresAt!)
-          : null,
+      expiresAt:
+          event.expiresAt != null ? int.tryParse(event.expiresAt!) : null,
     );
   }
 

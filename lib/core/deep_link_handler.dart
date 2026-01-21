@@ -81,18 +81,20 @@ class DeepLinkHandler {
       final deepLinkService = _ref.read(deepLinkServiceProvider);
 
       // Ensure we have a valid context for processing
-      final processingContext = context ?? router.routerDelegate.navigatorKey.currentContext;
+      final processingContext =
+          context ?? router.routerDelegate.navigatorKey.currentContext;
       if (processingContext == null || !processingContext.mounted) {
         _logger.e('No valid context available for deep link processing');
         return;
       }
 
       // Process the mostro link
-      final result = await deepLinkService.processMostroLink(url, nostrService, processingContext);
+      final result = await deepLinkService.processMostroLink(
+          url, nostrService, processingContext);
 
       // Get fresh context after async operation
       final currentContext = router.routerDelegate.navigatorKey.currentContext;
-      
+
       // Hide loading indicator
       if (currentContext != null && currentContext.mounted) {
         Navigator.of(currentContext).pop();
@@ -103,11 +105,13 @@ class DeepLinkHandler {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           deepLinkService.navigateToOrder(router, result.orderInfo!);
         });
-        _logger.i('Successfully navigated to order: ${result.orderInfo!.orderId} (${result.orderInfo!.orderType.value})');
+        _logger.i(
+            'Successfully navigated to order: ${result.orderInfo!.orderId} (${result.orderInfo!.orderType.value})');
       } else {
         final errorContext = router.routerDelegate.navigatorKey.currentContext;
         if (errorContext != null && errorContext.mounted) {
-          final errorMessage = result.error ?? S.of(errorContext)!.failedToLoadOrder;
+          final errorMessage =
+              result.error ?? S.of(errorContext)!.failedToLoadOrder;
           _showErrorSnackBar(errorContext, errorMessage);
         }
         _logger.w('Failed to process mostro link: ${result.error}');

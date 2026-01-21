@@ -33,7 +33,7 @@ class _DisputeChatScreenState extends ConsumerState<DisputeChatScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       DisputeReadStatusService.markDisputeAsRead(widget.disputeId);
       // Notify that the dispute has been marked as read
-      ref.read(disputeReadStatusProvider(widget.disputeId).notifier).state = 
+      ref.read(disputeReadStatusProvider(widget.disputeId).notifier).state =
           DateTime.now().millisecondsSinceEpoch;
     });
   }
@@ -42,7 +42,7 @@ class _DisputeChatScreenState extends ConsumerState<DisputeChatScreen> {
   Widget build(BuildContext context) {
     // Get real dispute data from provider
     final disputeAsync = ref.watch(disputeDetailsProvider(widget.disputeId));
-    
+
     return Scaffold(
       backgroundColor: AppTheme.backgroundDark,
       appBar: AppBar(
@@ -99,7 +99,8 @@ class _DisputeChatScreenState extends ConsumerState<DisputeChatScreen> {
         ),
         error: (error, stack) => Center(
           child: Text(
-            S.of(context)?.errorLoadingDispute(error.toString()) ?? 'Error loading dispute: ${error.toString()}',
+            S.of(context)?.errorLoadingDispute(error.toString()) ??
+                'Error loading dispute: ${error.toString()}',
             style: const TextStyle(color: Colors.white),
             textAlign: TextAlign.center,
           ),
@@ -107,7 +108,7 @@ class _DisputeChatScreenState extends ConsumerState<DisputeChatScreen> {
       ),
     );
   }
-  
+
   /// Convert Dispute model to DisputeData for UI consumption
   DisputeData _convertToDisputeData(Dispute dispute, WidgetRef ref) {
     // Try to get order state context for better data
@@ -117,13 +118,14 @@ class _DisputeChatScreenState extends ConsumerState<DisputeChatScreen> {
       // Find the session that matches this dispute's order
       Session? matchingSession;
       dynamic matchingOrderState;
-      
+
       for (final session in sessions) {
-        if (session.orderId != null && 
-            dispute.orderId != null && 
+        if (session.orderId != null &&
+            dispute.orderId != null &&
             session.orderId == dispute.orderId) {
           try {
-            final orderState = ref.read(orderNotifierProvider(session.orderId!));
+            final orderState =
+                ref.read(orderNotifierProvider(session.orderId!));
             matchingSession = session;
             matchingOrderState = orderState;
             break;
@@ -135,7 +137,8 @@ class _DisputeChatScreenState extends ConsumerState<DisputeChatScreen> {
       }
 
       // Convert session role to UserRole
-      final userRole = _convertSessionRoleToUserRole(matchingSession?.role, dispute.disputeId);
+      final userRole = _convertSessionRoleToUserRole(
+          matchingSession?.role, dispute.disputeId);
 
       // If we found a matching session, use it
       if (matchingSession != null && matchingOrderState != null) {
@@ -146,7 +149,8 @@ class _DisputeChatScreenState extends ConsumerState<DisputeChatScreen> {
           return _createDisputeDataWithChatInfo(
             dispute,
             matchingOrderState,
-            matchingSession.peer!.publicKey, // Use session.peer for correct counterparty
+            matchingSession
+                .peer!.publicKey, // Use session.peer for correct counterparty
             userRole,
           );
         }
@@ -163,7 +167,7 @@ class _DisputeChatScreenState extends ConsumerState<DisputeChatScreen> {
 
         // Use order state for context even without peer info
         return DisputeData.fromDispute(
-          dispute, 
+          dispute,
           orderState: matchingOrderState,
           userRole: userRole,
         );
@@ -174,13 +178,15 @@ class _DisputeChatScreenState extends ConsumerState<DisputeChatScreen> {
       for (final session in sessions) {
         if (session.orderId != null) {
           try {
-            final orderState = ref.read(orderNotifierProvider(session.orderId!));
-            
+            final orderState =
+                ref.read(orderNotifierProvider(session.orderId!));
+
             // Check if this order state contains our dispute
             if (orderState.dispute?.disputeId == dispute.disputeId) {
               // Convert session role to UserRole
-              final userRole = _convertSessionRoleToUserRole(session.role, dispute.disputeId);
-              
+              final userRole = _convertSessionRoleToUserRole(
+                  session.role, dispute.disputeId);
+
               // Found the order state that contains this dispute
               if (session.peer != null) {
                 return _createDisputeDataWithChatInfo(
@@ -190,7 +196,7 @@ class _DisputeChatScreenState extends ConsumerState<DisputeChatScreen> {
                   userRole,
                 );
               }
-              
+
               if (orderState.peer != null) {
                 return _createDisputeDataWithChatInfo(
                   dispute,
@@ -199,9 +205,9 @@ class _DisputeChatScreenState extends ConsumerState<DisputeChatScreen> {
                   userRole,
                 );
               }
-              
+
               return DisputeData.fromDispute(
-                dispute, 
+                dispute,
                 orderState: orderState,
                 userRole: userRole,
               );
@@ -221,24 +227,24 @@ class _DisputeChatScreenState extends ConsumerState<DisputeChatScreen> {
 
     return DisputeData.fromDispute(dispute);
   }
-  
+
   /// Create DisputeData with enhanced peer information from chat
   DisputeData _createDisputeDataWithChatInfo(
-    Dispute dispute, 
-    dynamic orderState, 
+    Dispute dispute,
+    dynamic orderState,
     String peerPubkey,
     UserRole? userRole,
   ) {
     // Use the same logic as DisputeData.fromDispute but with custom peer information
     // This ensures consistency across all dispute states
-    
+
     // First, create the dispute data using the standard method
     final standardDisputeData = DisputeData.fromDispute(
-      dispute, 
+      dispute,
       orderState: orderState,
       userRole: userRole,
     );
-    
+
     // Then override the counterparty with the correct peer information
     final disputeData = DisputeData(
       disputeId: standardDisputeData.disputeId,
@@ -251,14 +257,16 @@ class _DisputeChatScreenState extends ConsumerState<DisputeChatScreen> {
       userRole: standardDisputeData.userRole,
       action: standardDisputeData.action,
     );
-    
+
     return disputeData;
   }
 
   /// Convert session role to UserRole with logging
-  UserRole? _convertSessionRoleToUserRole(enums.Role? sessionRole, String disputeId) {
+  UserRole? _convertSessionRoleToUserRole(
+      enums.Role? sessionRole, String disputeId) {
     if (sessionRole == null) {
-      debugPrint('DisputeChatScreen: No session role found for dispute $disputeId');
+      debugPrint(
+          'DisputeChatScreen: No session role found for dispute $disputeId');
       return null;
     }
 
@@ -271,8 +279,8 @@ class _DisputeChatScreenState extends ConsumerState<DisputeChatScreen> {
       userRole = UserRole.unknown;
     }
 
-    debugPrint('DisputeChatScreen: session.role = $sessionRole, converted to userRole = $userRole');
+    debugPrint(
+        'DisputeChatScreen: session.role = $sessionRole, converted to userRole = $userRole');
     return userRole;
   }
-
 }

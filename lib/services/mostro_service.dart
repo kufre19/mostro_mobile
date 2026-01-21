@@ -39,7 +39,7 @@ class MostroService {
     _ordersSubscription?.cancel();
     logger.i('MostroService disposed');
   }
-  
+
   //IMPORTANT : The app always use trade index 1 for restore-related messages
   // When subscribtions are created from restore process for real orders, restore related messages may be avoided
   bool _isRestorePayload(Map<String, dynamic> json) {
@@ -122,7 +122,7 @@ class MostroService {
       if (decryptedEvent.content == null) return;
 
       final result = jsonDecode(decryptedEvent.content!);
-      
+
       // Ensure result is a non-empty List before accessing elements
       if (result is! List || result.isEmpty) {
         logger.w('Received empty or invalid payload, skipping');
@@ -131,22 +131,26 @@ class MostroService {
 
       // Skip dispute chat messages (they have "dm" key and are handled by DisputeChatNotifier)
       if (result[0] is Map && (result[0] as Map).containsKey('dm')) {
-        logger.i('Skipping dispute chat message (handled by DisputeChatNotifier)');
+        logger.i(
+            'Skipping dispute chat message (handled by DisputeChatNotifier)');
         return;
       }
 
       // Skip restore-specific payloads that arrive as historical events due to temporary subscription
-      if (result[0] is Map && _isRestorePayload(result[0] as Map<String, dynamic>)) {
+      if (result[0] is Map &&
+          _isRestorePayload(result[0] as Map<String, dynamic>)) {
         return;
       }
 
       final msg = MostroMessage.fromJson(result[0]);
 
       final messageStorage = ref.read(mostroStorageProvider);
-      
+
       // Use decryptedEvent.id if available, otherwise fall back to original event.id
       // This handles cases where admin messages might not have an id in the decrypted event
-      final messageKey = decryptedEvent.id ?? event.id ?? 'msg_${DateTime.now().millisecondsSinceEpoch}';
+      final messageKey = decryptedEvent.id ??
+          event.id ??
+          'msg_${DateTime.now().millisecondsSinceEpoch}';
       await messageStorage.addMessage(messageKey, msg);
       logger.i(
         'Received DM, Event ID: ${decryptedEvent.id ?? event.id} with payload: ${decryptedEvent.content}',

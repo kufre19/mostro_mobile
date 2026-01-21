@@ -31,7 +31,7 @@ class TradeInformationTab extends StatelessWidget {
       // Convert Unix timestamp to DateTime
       return DateTime.fromMillisecondsSinceEpoch(order!.createdAt! * 1000);
     }
-    
+
     // Fallback: use current time minus a reasonable amount
     // This is better than showing "Unknown date"
     return DateTime.now().subtract(const Duration(hours: 1));
@@ -208,8 +208,10 @@ class TradeInformationTab extends StatelessWidget {
                     Flexible(
                       child: Text(
                         order!.kind.value == 'sell'
-                            ? S.of(context)!.sellingSats(CurrencyUtils.formatSats(order!.amount))
-                            : S.of(context)!.buyingSats(CurrencyUtils.formatSats(order!.amount)),
+                            ? S.of(context)!.sellingSats(
+                                CurrencyUtils.formatSats(order!.amount))
+                            : S.of(context)!.buyingSats(
+                                CurrencyUtils.formatSats(order!.amount)),
                         style: const TextStyle(
                           color: AppTheme.cream1,
                           fontSize: 16,
@@ -223,7 +225,8 @@ class TradeInformationTab extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  S.of(context)!.forAmountWithCurrency(order!.fiatAmount.toString(), order!.fiatCode),
+                  S.of(context)!.forAmountWithCurrency(
+                      order!.fiatAmount.toString(), order!.fiatCode),
                   style: TextStyle(
                     color: AppTheme.textSecondary,
                     fontSize: 14,

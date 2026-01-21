@@ -80,11 +80,13 @@ class ChatRoomsScreen extends ConsumerWidget {
                       if (details.primaryVelocity != null &&
                           details.primaryVelocity! < 0) {
                         // Swipe left - go to disputes
-                        ref.read(chatTabProvider.notifier).state = ChatTabType.disputes;
+                        ref.read(chatTabProvider.notifier).state =
+                            ChatTabType.disputes;
                       } else if (details.primaryVelocity != null &&
                           details.primaryVelocity! > 0) {
                         // Swipe right - go to messages
-                        ref.read(chatTabProvider.notifier).state = ChatTabType.messages;
+                        ref.read(chatTabProvider.notifier).state =
+                            ChatTabType.messages;
                       }
                     },
                     child: Container(

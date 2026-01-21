@@ -25,7 +25,8 @@ class EncryptedImageMessage extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<EncryptedImageMessage> createState() => _EncryptedImageMessageState();
+  ConsumerState<EncryptedImageMessage> createState() =>
+      _EncryptedImageMessageState();
 }
 
 class _EncryptedImageMessageState extends ConsumerState<EncryptedImageMessage> {
@@ -42,7 +43,7 @@ class _EncryptedImageMessageState extends ConsumerState<EncryptedImageMessage> {
 
   void _loadImageIfNeeded() {
     if (!mounted) return;
-    
+
     final chatNotifier = ref.read(chatRoomsProvider(widget.orderId).notifier);
     final messageId = widget.message.id;
     if (messageId == null) {
@@ -53,7 +54,7 @@ class _EncryptedImageMessageState extends ConsumerState<EncryptedImageMessage> {
       }
       return;
     }
-    
+
     final cachedImage = chatNotifier.getCachedImage(messageId);
     if (cachedImage == null && !_isLoading) {
       _loadImage();
@@ -63,13 +64,13 @@ class _EncryptedImageMessageState extends ConsumerState<EncryptedImageMessage> {
   @override
   Widget build(BuildContext context) {
     final chatNotifier = ref.read(chatRoomsProvider(widget.orderId).notifier);
-    
+
     // Handle null message ID defensively
     final messageId = widget.message.id;
     if (messageId == null) {
       return _buildErrorWidget();
     }
-    
+
     // Check if image is already cached
     final cachedImage = chatNotifier.getCachedImage(messageId);
     final imageMetadata = chatNotifier.getImageMetadata(messageId);
@@ -90,15 +91,17 @@ class _EncryptedImageMessageState extends ConsumerState<EncryptedImageMessage> {
     return _buildLoadingWidget();
   }
 
-  Widget _buildImageWidget(Uint8List imageData, EncryptedImageUploadResult metadata) {
+  Widget _buildImageWidget(
+      Uint8List imageData, EncryptedImageUploadResult metadata) {
     return LayoutBuilder(
       builder: (context, constraints) {
         // Calculate available space for the image (leave space for info row)
         const infoRowHeight = 20.0; // Height for the filename/size row
         const spacing = 4.0;
         const padding = 8.0; // Total vertical padding
-        final availableHeight = constraints.maxHeight - infoRowHeight - spacing - padding;
-        
+        final availableHeight =
+            constraints.maxHeight - infoRowHeight - spacing - padding;
+
         return Container(
           constraints: BoxConstraints(
             maxWidth: constraints.maxWidth.clamp(0, 280),
@@ -114,7 +117,8 @@ class _EncryptedImageMessageState extends ConsumerState<EncryptedImageMessage> {
                   borderRadius: BorderRadius.circular(12),
                   child: Container(
                     constraints: BoxConstraints(
-                      maxHeight: availableHeight.clamp(100, 350), // Ensure reasonable min/max
+                      maxHeight: availableHeight.clamp(
+                          100, 350), // Ensure reasonable min/max
                     ),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
@@ -282,7 +286,7 @@ class _EncryptedImageMessageState extends ConsumerState<EncryptedImageMessage> {
 
   Future<void> _loadImage() async {
     if (_isLoading) return;
-    
+
     final messageId = widget.message.id;
     if (messageId == null) {
       if (mounted) {
@@ -300,7 +304,7 @@ class _EncryptedImageMessageState extends ConsumerState<EncryptedImageMessage> {
 
     try {
       final chatNotifier = ref.read(chatRoomsProvider(widget.orderId).notifier);
-      
+
       // Parse the message content to get image data
       final content = widget.message.content;
       if (content == null || content.trim().isEmpty) {
@@ -347,30 +351,32 @@ class _EncryptedImageMessageState extends ConsumerState<EncryptedImageMessage> {
     return '${(bytes / (1024 * 1024)).toStringAsFixed(1)}MB';
   }
 
-  Future<void> _openImage(Uint8List imageData, EncryptedImageUploadResult metadata) async {
+  Future<void> _openImage(
+      Uint8List imageData, EncryptedImageUploadResult metadata) async {
     // Cache localized strings before async operations
     final securityErrorMsg = S.of(context)!.securityErrorInvalidChars;
     final couldNotOpenMsg = S.of(context)!.couldNotOpenFile;
     final errorOpeningMsg = S.of(context)!.errorOpeningFile;
-    
+
     try {
-      
       // Save image to temporary directory
       final tempDir = await getTemporaryDirectory();
       final sanitizedFilename = _sanitizeFilename(metadata.filename);
       final tempFile = File('${tempDir.path}/$sanitizedFilename');
-      
+
       // Security check
-      if (sanitizedFilename.contains('/') || sanitizedFilename.contains('\\') || 
-          sanitizedFilename.contains('..') || sanitizedFilename.trim().isEmpty) {
+      if (sanitizedFilename.contains('/') ||
+          sanitizedFilename.contains('\\') ||
+          sanitizedFilename.contains('..') ||
+          sanitizedFilename.trim().isEmpty) {
         throw Exception(securityErrorMsg);
       }
-      
+
       await tempFile.writeAsBytes(imageData);
 
       // Open image with system default app
       final result = await OpenFile.open(tempFile.path);
-      
+
       if (mounted) {
         if (result.type != ResultType.done) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -398,16 +404,16 @@ class _EncryptedImageMessageState extends ConsumerState<EncryptedImageMessage> {
   String _sanitizeFilename(String filename) {
     // Get basename only (remove any directory components)
     final basename = filename.split(RegExp(r'[/\\]')).last;
-    
+
     // Normalize using diacritic package for comprehensive Unicode support
     String normalized = removeDiacritics(basename);
-    
+
     // Replace spaces and remove dangerous characters
     final cleaned = normalized
         .replaceAll(RegExp(r'\s+'), '_')
         .replaceAll(RegExp(r'[<>:"|?*\x00-\x1F]'), '_')
         .replaceAll('..', '_');
-    
+
     // Preserve file extension
     String sanitized = cleaned;
     if (sanitized.contains('.')) {
@@ -416,25 +422,50 @@ class _EncryptedImageMessageState extends ConsumerState<EncryptedImageMessage> {
         final extension = parts.last;
         final nameWithoutExt = parts.sublist(0, parts.length - 1).join('_');
         final maxNameLength = 100 - extension.length - 1;
-        final truncatedName = nameWithoutExt.length > maxNameLength 
+        final truncatedName = nameWithoutExt.length > maxNameLength
             ? nameWithoutExt.substring(0, maxNameLength)
             : nameWithoutExt;
         sanitized = '$truncatedName.$extension';
       }
     } else {
-      sanitized = sanitized.length > 100 ? sanitized.substring(0, 100) : sanitized;
+      sanitized =
+          sanitized.length > 100 ? sanitized.substring(0, 100) : sanitized;
     }
-    
+
     // Ensure not empty and not Windows reserved names
-    final nameOnly = sanitized.contains('.') ? sanitized.split('.').first : sanitized;
-    if (sanitized.isEmpty || nameOnly.isEmpty ||
-        ['CON', 'PRN', 'AUX', 'NUL', 'COM1', 'COM2', 'COM3', 'COM4', 'COM5', 
-         'COM6', 'COM7', 'COM8', 'COM9', 'LPT1', 'LPT2', 'LPT3', 'LPT4', 
-         'LPT5', 'LPT6', 'LPT7', 'LPT8', 'LPT9'].contains(nameOnly.toUpperCase())) {
-      final extension = sanitized.contains('.') ? '.${sanitized.split('.').last}' : '';
+    final nameOnly =
+        sanitized.contains('.') ? sanitized.split('.').first : sanitized;
+    if (sanitized.isEmpty ||
+        nameOnly.isEmpty ||
+        [
+          'CON',
+          'PRN',
+          'AUX',
+          'NUL',
+          'COM1',
+          'COM2',
+          'COM3',
+          'COM4',
+          'COM5',
+          'COM6',
+          'COM7',
+          'COM8',
+          'COM9',
+          'LPT1',
+          'LPT2',
+          'LPT3',
+          'LPT4',
+          'LPT5',
+          'LPT6',
+          'LPT7',
+          'LPT8',
+          'LPT9'
+        ].contains(nameOnly.toUpperCase())) {
+      final extension =
+          sanitized.contains('.') ? '.${sanitized.split('.').last}' : '';
       return 'image_${DateTime.now().millisecondsSinceEpoch}$extension';
     }
-    
+
     return sanitized;
   }
 }

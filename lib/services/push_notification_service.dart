@@ -120,7 +120,8 @@ class PushNotificationService {
         return false;
       }
 
-      debugPrint('PushService: Registering token for trade ${_shortenPubkey(tradePubkey)}');
+      debugPrint(
+          'PushService: Registering token for trade ${_shortenPubkey(tradePubkey)}');
 
       // Encrypt the token
       final encryptedToken = _encryptToken(fcmToken);

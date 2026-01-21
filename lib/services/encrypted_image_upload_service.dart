@@ -74,47 +74,43 @@ class EncryptedImageUploadService {
     String? filename,
   }) async {
     _logger.i('🔒 Starting encrypted image upload process...');
-    
+
     try {
       // 1. Read file
       final imageData = await imageFile.readAsBytes();
       _logger.d('Read image file: ${imageData.length} bytes');
-      
+
       // 2. Validate and sanitize with light sanitization for better performance
-      final validationResult = await MediaValidationService.validateAndSanitizeImageLight(
-        imageData
-      );
-      
-      _logger.i(
-        'Image validated and sanitized: ${validationResult.mimeType}, '
-        '${validationResult.width}x${validationResult.height}, '
-        '${validationResult.validatedData.length} bytes (sanitized)'
-      );
-      
+      final validationResult =
+          await MediaValidationService.validateAndSanitizeImageLight(imageData);
+
+      _logger.i('Image validated and sanitized: ${validationResult.mimeType}, '
+          '${validationResult.width}x${validationResult.height}, '
+          '${validationResult.validatedData.length} bytes (sanitized)');
+
       // 3. Encrypt with ChaCha20-Poly1305
       final encryptionResult = EncryptionService.encryptChaCha20Poly1305(
         key: sharedKey,
         plaintext: validationResult.validatedData,
       );
-      
+
       final encryptedBlob = encryptionResult.toBlob();
-      _logger.i(
-        '🔐 Image encrypted successfully: ${encryptedBlob.length} bytes '
-        '(nonce: ${encryptionResult.nonce.length}B, '
-        'data: ${encryptionResult.encryptedData.length}B, '
-        'tag: ${encryptionResult.authTag.length}B)'
-      );
-      
+      _logger
+          .i('🔐 Image encrypted successfully: ${encryptedBlob.length} bytes '
+              '(nonce: ${encryptionResult.nonce.length}B, '
+              'data: ${encryptionResult.encryptedData.length}B, '
+              'tag: ${encryptionResult.authTag.length}B)');
+
       // 4. Upload encrypted blob to Blossom
       final blossomUrl = await _uploadWithRetry(
         encryptedBlob,
         'application/octet-stream', // Always octet-stream for encrypted data
       );
-      
+
       // 5. Generate filename if not provided
-      final finalFilename = filename ?? 
-        'image_${DateTime.now().millisecondsSinceEpoch}.${validationResult.extension}';
-      
+      final finalFilename = filename ??
+          'image_${DateTime.now().millisecondsSinceEpoch}.${validationResult.extension}';
+
       final result = EncryptedImageUploadResult(
         blossomUrl: blossomUrl,
         nonce: _bytesToHex(encryptionResult.nonce),
@@ -125,13 +121,12 @@ class EncryptedImageUploadService {
         filename: finalFilename,
         encryptedSize: encryptedBlob.length,
       );
-      
+
       _logger.i('🎉 Encrypted image upload completed successfully!');
       _logger.i('📸 Blossom URL: ${result.blossomUrl}');
       _logger.i('🔑 Nonce: ${result.nonce}');
-      
+
       return result;
-      
     } catch (e) {
       _logger.e('❌ Encrypted image upload failed: $e');
       rethrow;
@@ -145,30 +140,31 @@ class EncryptedImageUploadService {
   }) async {
     _logger.i('🔓 Starting encrypted image download and decryption...');
     _logger.d('URL: $blossomUrl');
-    
+
     try {
       // 1. Download encrypted blob from Blossom
       final encryptedBlob = await _downloadFromBlossom(blossomUrl);
       _logger.i('📥 Downloaded encrypted blob: ${encryptedBlob.length} bytes');
-      
+
       // 2. Decrypt with ChaCha20-Poly1305
       final decryptedImage = EncryptionService.decryptFromBlob(
         key: sharedKey,
         blob: encryptedBlob,
       );
-      
-      _logger.i('🔓 Image decrypted successfully: ${decryptedImage.length} bytes');
-      
+
+      _logger
+          .i('🔓 Image decrypted successfully: ${decryptedImage.length} bytes');
+
       return decryptedImage;
-      
     } catch (e) {
       _logger.e('❌ Image download/decryption failed: $e');
       rethrow;
     }
   }
-  
+
   /// Upload with automatic retry to multiple servers
-  Future<String> _uploadWithRetry(Uint8List encryptedData, String mimeType) async {
+  Future<String> _uploadWithRetry(
+      Uint8List encryptedData, String mimeType) async {
     return BlossomUploadHelper.uploadWithRetry(encryptedData, mimeType);
   }
 
@@ -176,10 +172,9 @@ class EncryptedImageUploadService {
   Future<Uint8List> _downloadFromBlossom(String blossomUrl) async {
     return await BlossomDownloadService.downloadWithRetry(blossomUrl);
   }
-  
+
   /// Convert bytes to hex string
   String _bytesToHex(Uint8List bytes) {
     return bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
   }
 }
-

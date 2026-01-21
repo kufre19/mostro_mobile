@@ -29,7 +29,8 @@ class ActionButtons extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.backgroundCard,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
               ),
               child: Text(S.of(context)!.cancel),
             ),

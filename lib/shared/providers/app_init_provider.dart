@@ -19,17 +19,18 @@ final appInitializerProvider = FutureProvider<void>((ref) async {
 
   final sessionManager = ref.read(sessionNotifierProvider.notifier);
   await sessionManager.init();
-  
+
   ref.read(subscriptionManagerProvider);
 
   ref.listen<Settings>(settingsProvider, (previous, next) {
     ref.read(backgroundServiceProvider).updateSettings(next);
   });
 
-  final cutoff = DateTime.now().subtract(const Duration(hours: Config.sessionExpirationHours));
+  final cutoff = DateTime.now()
+      .subtract(const Duration(hours: Config.sessionExpirationHours));
 
   for (final session in sessionManager.sessions) {
-    if(session.orderId == null || session.startTime.isBefore(cutoff)) continue;
+    if (session.orderId == null || session.startTime.isBefore(cutoff)) continue;
 
     ref.read(orderNotifierProvider(session.orderId!).notifier);
 

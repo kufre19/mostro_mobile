@@ -25,19 +25,20 @@ class MessageBubble extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isFromPeer = message.pubkey == peerPubkey;
     final content = message.content;
-    
+
     // Return empty container if message content is null
     if (content == null) {
       return const SizedBox.shrink();
     }
-    
+
     // Check if this is an encrypted image message
     if (MessageTypeUtils.isEncryptedImageMessage(message)) {
       return Container(
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
         alignment: isFromPeer ? Alignment.centerLeft : Alignment.centerRight,
         child: Row(
-          mainAxisAlignment: isFromPeer ? MainAxisAlignment.start : MainAxisAlignment.end,
+          mainAxisAlignment:
+              isFromPeer ? MainAxisAlignment.start : MainAxisAlignment.end,
           children: [
             Flexible(
               child: ConstrainedBox(
@@ -48,7 +49,9 @@ class MessageBubble extends ConsumerWidget {
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: isFromPeer ? _getPeerMessageColor(peerPubkey) : AppTheme.purpleAccent,
+                    color: isFromPeer
+                        ? _getPeerMessageColor(peerPubkey)
+                        : AppTheme.purpleAccent,
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(16),
                       topRight: const Radius.circular(16),
@@ -68,14 +71,15 @@ class MessageBubble extends ConsumerWidget {
         ),
       );
     }
-    
+
     // Check if this is an encrypted file message
     if (MessageTypeUtils.isEncryptedFileMessage(message)) {
       return Container(
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
         alignment: isFromPeer ? Alignment.centerLeft : Alignment.centerRight,
         child: Row(
-          mainAxisAlignment: isFromPeer ? MainAxisAlignment.start : MainAxisAlignment.end,
+          mainAxisAlignment:
+              isFromPeer ? MainAxisAlignment.start : MainAxisAlignment.end,
           children: [
             Flexible(
               child: ConstrainedBox(
@@ -86,7 +90,9 @@ class MessageBubble extends ConsumerWidget {
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: isFromPeer ? _getPeerMessageColor(peerPubkey) : AppTheme.purpleAccent,
+                    color: isFromPeer
+                        ? _getPeerMessageColor(peerPubkey)
+                        : AppTheme.purpleAccent,
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(16),
                       topRight: const Radius.circular(16),
@@ -106,25 +112,30 @@ class MessageBubble extends ConsumerWidget {
         ),
       );
     }
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       alignment: isFromPeer ? Alignment.centerLeft : Alignment.centerRight,
       child: Row(
-        mainAxisAlignment: isFromPeer ? MainAxisAlignment.start : MainAxisAlignment.end,
+        mainAxisAlignment:
+            isFromPeer ? MainAxisAlignment.start : MainAxisAlignment.end,
         children: [
           Flexible(
             child: ConstrainedBox(
               constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.75, // Max 75% of screen width
+                maxWidth: MediaQuery.of(context).size.width *
+                    0.75, // Max 75% of screen width
                 minWidth: 0,
               ),
               child: GestureDetector(
                 onLongPress: () => _copyToClipboard(context, content),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: isFromPeer ? _getPeerMessageColor(peerPubkey) : AppTheme.purpleAccent,
+                    color: isFromPeer
+                        ? _getPeerMessageColor(peerPubkey)
+                        : AppTheme.purpleAccent,
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(16),
                       topRight: const Radius.circular(16),
@@ -168,15 +179,15 @@ class MessageBubble extends ConsumerWidget {
       );
     }
   }
-  
+
   /// Returns a subdued version of the peer's avatar color for message bubbles
   Color _getPeerMessageColor(String pubkey) {
     // Get the original avatar color
     final avatarColor = pickNymColor(pubkey);
-    
+
     // Create a subdued version by reducing saturation and value
     final HSVColor hsvColor = HSVColor.fromColor(avatarColor);
-    
+
     // Create a more subdued version with lower saturation and value
     // but keep enough color to be recognizable
     return hsvColor.withSaturation(0.3).withValue(0.25).toColor();

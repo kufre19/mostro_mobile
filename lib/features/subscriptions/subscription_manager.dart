@@ -18,7 +18,7 @@ import 'package:mostro_mobile/shared/providers/session_notifier_provider.dart';
 class SubscriptionManager {
   final Ref ref;
   final Map<SubscriptionType, Subscription> _subscriptions = {};
-  
+
   late final ProviderSubscription _sessionListener;
 
   final _ordersController = StreamController<NostrEvent>.broadcast();
@@ -52,18 +52,20 @@ class SubscriptionManager {
 
   /// CRITICAL: Initialize subscriptions for existing sessions
   /// DO NOT REMOVE: Fixes stuck orders bug when app restarts with existing sessions
-  /// 
-  /// This method ensures that subscriptions are created for sessions that already 
-  /// exist when SubscriptionManager is created, since fireImmediately: false 
+  ///
+  /// This method ensures that subscriptions are created for sessions that already
+  /// exist when SubscriptionManager is created, since fireImmediately: false
   /// prevents automatic initialization.
   void _initializeExistingSessions() {
     try {
       final existingSessions = ref.read(sessionNotifierProvider);
       if (existingSessions.isNotEmpty) {
-        logger.i('Initializing subscriptions for ${existingSessions.length} existing sessions');
+        logger.i(
+            'Initializing subscriptions for ${existingSessions.length} existing sessions');
         _updateAllSubscriptions(existingSessions);
       } else {
-        logger.i('No existing sessions found during SubscriptionManager initialization');
+        logger.i(
+            'No existing sessions found during SubscriptionManager initialization');
       }
     } catch (e, stackTrace) {
       logger.e('Error initializing existing sessions',
@@ -209,7 +211,8 @@ class SubscriptionManager {
         return chat;
       case SubscriptionType.relayList:
         // RelayList subscriptions should use subscribeToMostroRelayList() instead
-        throw UnsupportedError('Use subscribeToMostroRelayList() for relay list subscriptions');
+        throw UnsupportedError(
+            'Use subscribeToMostroRelayList() for relay list subscriptions');
     }
   }
 

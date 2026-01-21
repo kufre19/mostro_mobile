@@ -15,8 +15,6 @@ final chatRoomsNotifierProvider =
   },
 );
 
-
-
 // Helper provider to check if a chat room is ready for use
 final isChatRoomReadyProvider = Provider.family<bool, String>((ref, chatId) {
   return ref.watch(chatRoomInitializedProvider(chatId));
@@ -27,20 +25,20 @@ final isChatRoomReadyProvider = Provider.family<bool, String>((ref, chatId) {
 final sortedChatRoomsProvider = Provider<List<ChatRoom>>((ref) {
   // Watch the main chat rooms list
   final chatRoomsList = ref.watch(chatRoomsNotifierProvider);
-  
+
   // Get fresh data for each chat room and sort them
   final chatRoomsWithFreshData = chatRoomsList.map((chatRoom) {
     // Watch individual chat providers to get the most up-to-date state
     return ref.watch(chatRoomsProvider(chatRoom.orderId));
   }).toList();
-  
+
   // Sort by session start time (most recently taken order first)
   chatRoomsWithFreshData.sort((a, b) {
     final aSessionStartTime = _getSessionStartTime(ref, a);
     final bSessionStartTime = _getSessionStartTime(ref, b);
     return bSessionStartTime.compareTo(aSessionStartTime);
   });
-  
+
   return chatRoomsWithFreshData;
 });
 
@@ -55,10 +53,12 @@ int _getSessionStartTime(Ref ref, ChatRoom chatRoom) {
     if (session != null) {
       // Return the session start time (when the order was taken/contacted)
       final startTime = session.startTime.millisecondsSinceEpoch ~/ 1000;
-      _sessionLogger.d('Retrieved session start time for chat ${chatRoom.orderId}: $startTime');
+      _sessionLogger.d(
+          'Retrieved session start time for chat ${chatRoom.orderId}: $startTime');
       return startTime;
     } else {
-      _sessionLogger.i('No session found for chat ${chatRoom.orderId}, using fallback time');
+      _sessionLogger.i(
+          'No session found for chat ${chatRoom.orderId}, using fallback time');
     }
   } catch (e, stackTrace) {
     // Enhanced error handling with proper logging for diagnostics
@@ -68,9 +68,10 @@ int _getSessionStartTime(Ref ref, ChatRoom chatRoom) {
       stackTrace: stackTrace,
     );
   }
-  
+
   // Fallback: use current time so new chats appear at top
   final fallbackTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-  _sessionLogger.d('Using fallback time for chat ${chatRoom.orderId}: $fallbackTime');
+  _sessionLogger
+      .d('Using fallback time for chat ${chatRoom.orderId}: $fallbackTime');
   return fallbackTime;
 }

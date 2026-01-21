@@ -11,7 +11,8 @@ class TemporaryNotificationsState {
     TemporaryNotification? temporaryNotification,
   }) {
     return TemporaryNotificationsState(
-      temporaryNotification: temporaryNotification ?? this.temporaryNotification,
+      temporaryNotification:
+          temporaryNotification ?? this.temporaryNotification,
     );
   }
 

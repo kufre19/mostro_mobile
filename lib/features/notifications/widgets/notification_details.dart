@@ -74,7 +74,10 @@ class NotificationDetails extends StatelessWidget {
       case mostro_action.Action.waitingBuyerInvoice:
         if (data.containsKey('expiration_seconds')) {
           final expirationSeconds = data['expiration_seconds'];
-          final expirationMinutes = (expirationSeconds is int ? expirationSeconds : int.tryParse(expirationSeconds.toString()) ?? 0) ~/ 60;
+          final expirationMinutes = (expirationSeconds is int
+                  ? expirationSeconds
+                  : int.tryParse(expirationSeconds.toString()) ?? 0) ~/
+              60;
           widgets.add(DetailRow(
             label: S.of(context)!.notificationTimeout,
             value: '$expirationMinutes ${S.of(context)!.notificationMinutes}',
@@ -105,7 +108,8 @@ class NotificationDetails extends StatelessWidget {
         if (data.containsKey('payment_retries_interval')) {
           widgets.add(DetailRow(
             label: S.of(context)!.notificationRetryInterval,
-            value: '${data['payment_retries_interval']} ${S.of(context)!.notificationSeconds}',
+            value:
+                '${data['payment_retries_interval']} ${S.of(context)!.notificationSeconds}',
             icon: HeroIcons.clock,
           ));
         }
@@ -122,7 +126,8 @@ class NotificationDetails extends StatelessWidget {
         break;
 
       case mostro_action.Action.released:
-        if (data.containsKey('seller_npub') && data['seller_npub'].toString().isNotEmpty) {
+        if (data.containsKey('seller_npub') &&
+            data['seller_npub'].toString().isNotEmpty) {
           widgets.add(DetailRow(
             label: S.of(context)!.notificationSeller,
             value: _formatHashOrId(context, data['seller_npub']),
@@ -132,7 +137,8 @@ class NotificationDetails extends StatelessWidget {
         break;
 
       case mostro_action.Action.holdInvoicePaymentSettled:
-        if (data.containsKey('buyer_npub') && data['buyer_npub'].toString().isNotEmpty) {
+        if (data.containsKey('buyer_npub') &&
+            data['buyer_npub'].toString().isNotEmpty) {
           widgets.add(DetailRow(
             label: S.of(context)!.notificationBuyer,
             value: _formatHashOrId(context, data['buyer_npub']),
@@ -164,7 +170,8 @@ class NotificationDetails extends StatelessWidget {
         break;
 
       case mostro_action.Action.buyerTookOrder:
-        if (data.containsKey('buyer_npub') && data['buyer_npub'].toString().isNotEmpty) {
+        if (data.containsKey('buyer_npub') &&
+            data['buyer_npub'].toString().isNotEmpty) {
           widgets.add(DetailRow(
             label: S.of(context)!.notificationBuyer,
             value: _formatHashOrId(context, data['buyer_npub']),
@@ -205,7 +212,7 @@ class NotificationDetails extends StatelessWidget {
     if (stringValue.isEmpty) {
       return S.of(context)!.notAvailable;
     }
-    
+
     // Let UI handle overflow with ellipsis, but provide smart truncation for better UX
     // For hashes, show start+end is more useful than just start+ellipsis
     if (!stringValue.contains('-') && stringValue.length > 16) {
@@ -214,9 +221,8 @@ class NotificationDetails extends StatelessWidget {
       String end = stringValue.substring(stringValue.length - 5);
       return '$start...$end';
     }
-    
+
     // For nyms and short values, return as-is and let UI handle overflow
     return stringValue;
   }
-
 }

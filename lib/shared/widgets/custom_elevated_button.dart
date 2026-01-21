@@ -36,16 +36,19 @@ class CustomElevatedButton extends StatelessWidget {
       ),
       child: AutoSizeText(
         text,
-        style: textStyle ?? Theme.of(context).textTheme.labelLarge?.copyWith(
-          fontWeight: FontWeight.w500,
-          color: foregroundColor ?? Colors.black,
-        ),
+        style: textStyle ??
+            Theme.of(context).textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: foregroundColor ?? Colors.black,
+                ),
         minFontSize: minFontSize,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
     );
-    
-    return width != null ? SizedBox(width: width, child: buttonWidget) : buttonWidget;
+
+    return width != null
+        ? SizedBox(width: width, child: buttonWidget)
+        : buttonWidget;
   }
 }

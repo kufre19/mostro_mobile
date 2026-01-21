@@ -67,7 +67,8 @@ class OrderListItem extends ConsumerWidget {
           borderRadius: BorderRadius.circular(20),
           onTap: () {
             final sessions = ref.watch(sessionNotifierProvider);
-            final session = sessions.firstWhereOrNull((s) => s.orderId == order.orderId);
+            final session =
+                sessions.firstWhereOrNull((s) => s.orderId == order.orderId);
             if (session != null && session.role != null) {
               context.push('/trade_detail/${session.orderId}');
               return;

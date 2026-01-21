@@ -37,7 +37,15 @@ class Currency {
   factory Currency.fromJson(Map<String, dynamic> json) {
     try {
       // Validate required fields
-      final requiredFields = ['symbol', 'name', 'symbol_native', 'code', 'emoji', 'decimal_digits', 'name_plural'];
+      final requiredFields = [
+        'symbol',
+        'name',
+        'symbol_native',
+        'code',
+        'emoji',
+        'decimal_digits',
+        'name_plural'
+      ];
       for (final field in requiredFields) {
         if (!json.containsKey(field) || json[field] == null) {
           throw FormatException('Missing required field: $field');
@@ -51,9 +59,11 @@ class Currency {
         decimalDigits = decimalDigitsValue;
       } else if (decimalDigitsValue is String) {
         decimalDigits = int.tryParse(decimalDigitsValue) ??
-            (throw FormatException('Invalid decimal_digits format: $decimalDigitsValue'));
+            (throw FormatException(
+                'Invalid decimal_digits format: $decimalDigitsValue'));
       } else {
-        throw FormatException('Invalid decimal_digits type: ${decimalDigitsValue.runtimeType}');
+        throw FormatException(
+            'Invalid decimal_digits type: ${decimalDigitsValue.runtimeType}');
       }
 
       // Parse price field

@@ -19,7 +19,7 @@ class ChatRoom {
       messages: messages ?? this.messages,
     );
   }
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -27,7 +27,7 @@ class ChatRoom {
         other.orderId == orderId &&
         _listEquals(other.messages, messages);
   }
-  
+
   bool _listEquals<T>(List<T> a, List<T> b) {
     if (a.length != b.length) return false;
     for (int i = 0; i < a.length; i++) {
@@ -35,10 +35,11 @@ class ChatRoom {
     }
     return true;
   }
-  
+
   @override
   int get hashCode => Object.hash(orderId, Object.hashAll(messages));
-  
+
   @override
-  String toString() => 'ChatRoom(orderId: $orderId, messages: ${messages.length} messages)';
+  String toString() =>
+      'ChatRoom(orderId: $orderId, messages: ${messages.length} messages)';
 }

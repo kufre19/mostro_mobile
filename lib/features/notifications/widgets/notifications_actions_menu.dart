@@ -70,7 +70,7 @@ class NotificationsActionsMenu extends ConsumerWidget {
 
   void _handleMenuAction(BuildContext context, WidgetRef ref, String action) {
     final repository = ref.read(notificationsDatabaseProvider);
-    
+
     switch (action) {
       case 'mark_all_read':
         repository.markAllAsRead();

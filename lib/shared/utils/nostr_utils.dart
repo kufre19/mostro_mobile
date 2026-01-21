@@ -249,7 +249,6 @@ class NostrUtils {
   /// This adds computational proof to demonstrate the event is not spam
   static Future<NostrEvent> createWrap(NostrKeyPairs wrapperKeyPair,
       String sealedContent, String recipientPubKey) async {
-    
     // Create a simple wrapper event without proof-of-work
     final wrapEvent = NostrEvent.fromPartialData(
       kind: 1059,
@@ -398,5 +397,4 @@ class NostrUtils {
       throw Exception('Decryption failed: $e');
     }
   }
-
 }

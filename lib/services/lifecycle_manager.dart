@@ -90,7 +90,7 @@ class LifecycleManager extends WidgetsBindingObserver {
       // Get the subscription manager
       final subscriptionManager = ref.read(subscriptionManagerProvider);
       final activeFilters = <NostrFilter>[];
-      
+
       // Get actual filters for each subscription type
       for (final type in SubscriptionType.values) {
         final filters = subscriptionManager.getActiveFilters(type);
@@ -122,7 +122,8 @@ class LifecycleManager extends WidgetsBindingObserver {
 
   @Deprecated('Use SubscriptionManager instead.')
   void addSubscription(NostrFilter filter) {
-    _logger.w('LifecycleManager.addSubscription is deprecated. Use SubscriptionManager instead.');
+    _logger.w(
+        'LifecycleManager.addSubscription is deprecated. Use SubscriptionManager instead.');
     // No-op - subscriptions are now tracked by SubscriptionManager
   }
 

@@ -21,7 +21,8 @@ class RestoreOverlay extends ConsumerWidget {
     final isMediumScreen = screenWidth >= 360 && screenWidth < 600;
 
     // Responsive values
-    final horizontalMargin = isSmallScreen ? 24.0 : (isMediumScreen ? 32.0 : 40.0);
+    final horizontalMargin =
+        isSmallScreen ? 24.0 : (isMediumScreen ? 32.0 : 40.0);
     final containerPadding = isSmallScreen ? 24.0 : 32.0;
     final iconSize = isSmallScreen ? 48.0 : 64.0;
     final titleFontSize = isSmallScreen ? 18.0 : 20.0;

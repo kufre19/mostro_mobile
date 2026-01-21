@@ -17,21 +17,23 @@ class RestoreData implements Payload {
 
     return RestoreData(
       orders: (restoreData['orders'] as List<dynamic>?)
-          ?.map((o) => RestoredOrder.fromJson(o as Map<String, dynamic>))
-          .toList() ?? [],
+              ?.map((o) => RestoredOrder.fromJson(o as Map<String, dynamic>))
+              .toList() ??
+          [],
       disputes: (restoreData['disputes'] as List<dynamic>?)
-          ?.map((d) => RestoredDispute.fromJson(d as Map<String, dynamic>))
-          .toList() ?? [],
+              ?.map((d) => RestoredDispute.fromJson(d as Map<String, dynamic>))
+              .toList() ??
+          [],
     );
   }
 
   @override
   Map<String, dynamic> toJson() => {
-    'restore_data': {
-      'orders': orders.map((o) => o.toJson()).toList(),
-      'disputes': disputes.map((d) => d.toJson()).toList(),
-    }
-  };
+        'restore_data': {
+          'orders': orders.map((o) => o.toJson()).toList(),
+          'disputes': disputes.map((d) => d.toJson()).toList(),
+        }
+      };
 }
 
 class RestoredOrder {
@@ -54,10 +56,10 @@ class RestoredOrder {
   }
 
   Map<String, dynamic> toJson() => {
-    'order_id': id,
-    'trade_index': tradeIndex,
-    'status': status,
-  };
+        'order_id': id,
+        'trade_index': tradeIndex,
+        'status': status,
+      };
 }
 
 class RestoredDispute {
@@ -83,9 +85,9 @@ class RestoredDispute {
   }
 
   Map<String, dynamic> toJson() => {
-    'dispute_id': disputeId,
-    'order_id': orderId,
-    'trade_index': tradeIndex,
-    'status': status,
-  };
+        'dispute_id': disputeId,
+        'order_id': orderId,
+        'trade_index': tradeIndex,
+        'status': status,
+      };
 }

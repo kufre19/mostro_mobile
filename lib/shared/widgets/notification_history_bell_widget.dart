@@ -10,7 +10,8 @@ class NotificationBellWidget extends ConsumerStatefulWidget {
   const NotificationBellWidget({super.key});
 
   @override
-  ConsumerState<NotificationBellWidget> createState() => _NotificationBellWidgetState();
+  ConsumerState<NotificationBellWidget> createState() =>
+      _NotificationBellWidgetState();
 }
 
 class _NotificationBellWidgetState extends ConsumerState<NotificationBellWidget>
@@ -32,7 +33,7 @@ class _NotificationBellWidgetState extends ConsumerState<NotificationBellWidget>
       parent: _animationController,
       curve: Curves.easeInOut,
     ));
-    
+
     // Handle initial state where backup reminder might already be active
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -88,9 +89,9 @@ class _NotificationBellWidgetState extends ConsumerState<NotificationBellWidget>
             );
           },
         ),
-        if (shouldShowBackupReminder && unreadCount == 0) 
+        if (shouldShowBackupReminder && unreadCount == 0)
           const _BackupReminderDot()
-        else if (unreadCount > 0) 
+        else if (unreadCount > 0)
           _NotificationBadge(count: unreadCount),
       ],
     );

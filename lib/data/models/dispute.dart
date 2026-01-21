@@ -9,21 +9,17 @@ import 'package:mostro_mobile/generated/l10n.dart';
 /// Enum representing semantic keys for dispute descriptions
 /// These keys will be used for localization in the UI
 enum DisputeDescriptionKey {
-  initiatedByUser,      // You opened this dispute
-  initiatedByPeer,      // A dispute was opened against you
-  initiatedPendingAdmin,// Dispute initiated, waiting for admin assignment
-  inProgress,           // Dispute is being reviewed by an admin
-  resolved,             // Dispute has been resolved
-  sellerRefunded,       // Dispute resolved - seller refunded
-  unknown               // Unknown status
+  initiatedByUser, // You opened this dispute
+  initiatedByPeer, // A dispute was opened against you
+  initiatedPendingAdmin, // Dispute initiated, waiting for admin assignment
+  inProgress, // Dispute is being reviewed by an admin
+  resolved, // Dispute has been resolved
+  sellerRefunded, // Dispute resolved - seller refunded
+  unknown // Unknown status
 }
 
 /// Enum representing the user's role in a dispute
-enum UserRole {
-  buyer,
-  seller,
-  unknown
-}
+enum UserRole { buyer, seller, unknown }
 
 /// Semantic keys for missing or unknown values
 class DisputeSemanticKeys {
@@ -32,7 +28,7 @@ class DisputeSemanticKeys {
 }
 
 /// Represents a dispute in the Mostro system.
-/// 
+///
 /// A dispute can be initiated by either buyer or seller when there's a problem
 /// with an order. The dispute is identified by a unique ID and is associated
 /// with a specific order.
@@ -83,7 +79,6 @@ class Dispute implements Payload {
       json['order'] = order!.toJson();
     }
 
-
     if (adminPubkey != null) {
       json['admin_pubkey'] = adminPubkey;
     }
@@ -112,7 +107,7 @@ class Dispute implements Payload {
         (tag) => tag.isNotEmpty && tag[0] == name,
         orElse: () => [],
       );
-      
+
       if (tag.length > 1 && tag[1] != null && tag[1].toString().isNotEmpty) {
         return tag[1].toString();
       }
@@ -127,14 +122,14 @@ class Dispute implements Payload {
   static int _extractCreatedAtMillis(dynamic event) {
     try {
       final createdAtRaw = event.createdAt;
-      
+
       if (createdAtRaw == null) {
         return DateTime.now().millisecondsSinceEpoch;
       } else if (createdAtRaw is int) {
         // Nostr timestamps are in seconds, convert to milliseconds if needed
-        return createdAtRaw < 10000000000 
+        return createdAtRaw < 10000000000
             ? createdAtRaw * 1000 // Convert seconds to milliseconds
-            : createdAtRaw;       // Already in milliseconds
+            : createdAtRaw; // Already in milliseconds
       } else if (createdAtRaw is DateTime) {
         return createdAtRaw.millisecondsSinceEpoch;
       }
@@ -148,25 +143,24 @@ class Dispute implements Payload {
   factory Dispute.fromNostrEvent(dynamic event, Map<String, dynamic> content) {
     try {
       // Extract dispute ID from 'd' tag, fallback to content or event ID
-      final disputeId = _extractTag(event, 'd') ?? 
-                        content['dispute_id'] ?? 
-                        content['dispute'] ?? 
-                        event.id ?? 
-                        '';
-      
+      final disputeId = _extractTag(event, 'd') ??
+          content['dispute_id'] ??
+          content['dispute'] ??
+          event.id ??
+          '';
+
       // Extract order ID from content
       final orderId = content['order_id'] as String?;
-      
+
       // Extract status from 's' tag or content, default to 'initiated'
-      final status = _extractTag(event, 's') ?? 
-                     content['status'] as String? ?? 
-                     'initiated';
-      
+      final status = _extractTag(event, 's') ??
+          content['status'] as String? ??
+          'initiated';
+
       // Extract creation timestamp from event
-      final createdAt = DateTime.fromMillisecondsSinceEpoch(
-        _extractCreatedAtMillis(event)
-      );
-      
+      final createdAt =
+          DateTime.fromMillisecondsSinceEpoch(_extractCreatedAtMillis(event));
+
       return Dispute(
         disputeId: disputeId,
         orderId: orderId,
@@ -187,37 +181,39 @@ class Dispute implements Payload {
       if (oid == null) {
         throw FormatException('Missing required field: dispute');
       }
-      
+
       String disputeIdValue;
       if (oid is List) {
         if (oid.isEmpty) {
           throw FormatException('Dispute list cannot be empty');
         }
-        disputeIdValue = oid[0]?.toString() ?? 
-          (throw FormatException('First element of dispute list is null'));
+        disputeIdValue = oid[0]?.toString() ??
+            (throw FormatException('First element of dispute list is null'));
       } else {
         disputeIdValue = oid.toString();
       }
-      
+
       if (disputeIdValue.isEmpty) {
         throw FormatException('Dispute ID cannot be empty');
       }
-      
+
       // Extract optional fields
       final orderId = json['order_id'] as String?;
       final status = json['status'] as String?;
       final adminPubkey = json['admin_pubkey'] as String?;
-      
+
       // Extract admin_took_at timestamp
       DateTime? adminTookAt;
       if (json.containsKey('admin_took_at') && json['admin_took_at'] != null) {
         final timestamp = json['admin_took_at'];
         if (timestamp is int || timestamp is double) {
-          final timestampInt = timestamp is double ? timestamp.toInt() : timestamp as int;
-          final normalizedTimestamp = timestampInt < 10000000000 
+          final timestampInt =
+              timestamp is double ? timestamp.toInt() : timestamp as int;
+          final normalizedTimestamp = timestampInt < 10000000000
               ? timestampInt * 1000 // Convert seconds to milliseconds
-              : timestampInt;       // Already in milliseconds
-          adminTookAt = DateTime.fromMillisecondsSinceEpoch(normalizedTimestamp);
+              : timestampInt; // Already in milliseconds
+          adminTookAt =
+              DateTime.fromMillisecondsSinceEpoch(normalizedTimestamp);
         } else if (timestamp is String) {
           final parsed = DateTime.tryParse(timestamp);
           if (parsed != null) {
@@ -225,22 +221,23 @@ class Dispute implements Payload {
           }
         }
       }
-      
+
       // Extract order if present
       Order? order;
       if (json.containsKey('order') && json['order'] != null) {
         order = Order.fromJson(json['order'] as Map<String, dynamic>);
       }
-      
+
       // Extract created_at timestamp
       DateTime? createdAt;
       if (json.containsKey('created_at') && json['created_at'] != null) {
         final timestamp = json['created_at'];
         if (timestamp is int || timestamp is double) {
-          final timestampInt = timestamp is double ? timestamp.toInt() : timestamp as int;
-          final normalizedTimestamp = timestampInt < 10000000000 
+          final timestampInt =
+              timestamp is double ? timestamp.toInt() : timestamp as int;
+          final normalizedTimestamp = timestampInt < 10000000000
               ? timestampInt * 1000 // Convert seconds to milliseconds
-              : timestampInt;       // Already in milliseconds
+              : timestampInt; // Already in milliseconds
           createdAt = DateTime.fromMillisecondsSinceEpoch(normalizedTimestamp);
         } else if (timestamp is String) {
           final parsed = DateTime.tryParse(timestamp);
@@ -249,7 +246,7 @@ class Dispute implements Payload {
           }
         }
       }
-      
+
       return Dispute(
         disputeId: disputeIdValue,
         orderId: orderId,
@@ -282,35 +279,41 @@ class Dispute implements Payload {
       orderId: orderId == _sentinel ? this.orderId : orderId as String?,
       status: status == _sentinel ? this.status : status as String?,
       order: order == _sentinel ? this.order : order as Order?,
-      adminPubkey: adminPubkey == _sentinel ? this.adminPubkey : adminPubkey as String?,
-      adminTookAt: adminTookAt == _sentinel ? this.adminTookAt : adminTookAt as DateTime?,
-      createdAt: createdAt == _sentinel ? this.createdAt : createdAt as DateTime?,
+      adminPubkey:
+          adminPubkey == _sentinel ? this.adminPubkey : adminPubkey as String?,
+      adminTookAt: adminTookAt == _sentinel
+          ? this.adminTookAt
+          : adminTookAt as DateTime?,
+      createdAt:
+          createdAt == _sentinel ? this.createdAt : createdAt as DateTime?,
       action: action == _sentinel ? this.action : action as String?,
     );
   }
 
   @override
   String get type => 'dispute';
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is Dispute && 
-           other.disputeId == disputeId &&
-           other.orderId == orderId &&
-           other.status == status &&
-           other.order == order &&
-           other.adminPubkey == adminPubkey &&
-           other.adminTookAt == adminTookAt &&
-           other.createdAt == createdAt &&
-           other.action == action;
+    return other is Dispute &&
+        other.disputeId == disputeId &&
+        other.orderId == orderId &&
+        other.status == status &&
+        other.order == order &&
+        other.adminPubkey == adminPubkey &&
+        other.adminTookAt == adminTookAt &&
+        other.createdAt == createdAt &&
+        other.action == action;
   }
-  
+
   @override
-  int get hashCode => Object.hash(disputeId, orderId, status, order, adminPubkey, adminTookAt, createdAt, action);
-  
+  int get hashCode => Object.hash(disputeId, orderId, status, order,
+      adminPubkey, adminTookAt, createdAt, action);
+
   @override
-  String toString() => 'Dispute(disputeId: $disputeId, orderId: $orderId, status: $status, adminPubkey: $adminPubkey, adminTookAt: $adminTookAt, createdAt: $createdAt, action: $action)';
+  String toString() =>
+      'Dispute(disputeId: $disputeId, orderId: $orderId, status: $status, adminPubkey: $adminPubkey, adminTookAt: $adminTookAt, createdAt: $createdAt, action: $action)';
 }
 
 /// UI-facing view model for disputes used across widgets.
@@ -338,7 +341,7 @@ class DisputeData {
   });
 
   /// Create DisputeData from Dispute object with OrderState context
-  /// 
+  ///
   /// [userRole] is the user's role in the order (buyer or seller), obtained from the Session
   factory DisputeData.fromDispute(
     Dispute dispute, {
@@ -347,17 +350,19 @@ class DisputeData {
   }) {
     // Determine if user is the creator based on the OrderState action if available
     bool? isUserCreator;
-    
+
     if (orderState != null) {
       // Use OrderState action which has the correct dispute initiation info
       if (kDebugMode) {
-        debugPrint('DisputeData.fromDispute: orderState.action = ${orderState.action}');
+        debugPrint(
+            'DisputeData.fromDispute: orderState.action = ${orderState.action}');
       }
       isUserCreator = orderState.action == enums.Action.disputeInitiatedByYou;
     } else if (dispute.action != null) {
       // Fallback to dispute action - convert string to enum for comparison
       if (kDebugMode) {
-        debugPrint('DisputeData.fromDispute: dispute.action = "${dispute.action}"');
+        debugPrint(
+            'DisputeData.fromDispute: dispute.action = "${dispute.action}"');
       }
       // Parse the action string to enum for proper comparison
       final disputeAction = _parseActionFromString(dispute.action!);
@@ -366,14 +371,15 @@ class DisputeData {
       // If no action info is available, leave as null (unknown state)
       // This removes the assumption that user is creator by default
       if (kDebugMode) {
-        debugPrint('DisputeData.fromDispute: No action info available, setting isUserCreator = null');
+        debugPrint(
+            'DisputeData.fromDispute: No action info available, setting isUserCreator = null');
       }
       isUserCreator = null;
     }
-    
+
     // Try to get counterparty info from order state
     String? counterpartyName;
-    
+
     // Use the provided userRole or default to unknown
     final finalUserRole = userRole ?? UserRole.unknown;
 
@@ -393,7 +399,8 @@ class DisputeData {
     ];
 
     if (orderState?.peer != null) {
-      counterpartyName = orderState!.peer!.publicKey; // This will be resolved by nickNameProvider in the UI
+      counterpartyName = orderState!.peer!
+          .publicKey; // This will be resolved by nickNameProvider in the UI
     }
 
     // Only use admin pubkey as counterparty if:
@@ -401,26 +408,28 @@ class DisputeData {
     // 2. Admin pubkey exists
     // 3. Dispute is not in a terminal state (normalize status to lowercase for comparison)
     final normalizedStatus = dispute.status?.toLowerCase().trim() ?? '';
-    if (orderState?.peer == null && 
-        dispute.adminPubkey != null && 
+    if (orderState?.peer == null &&
+        dispute.adminPubkey != null &&
         !terminalStatusList.contains(normalizedStatus)) {
       counterpartyName = dispute.adminPubkey;
     }
-    
+
     if (kDebugMode) {
       debugPrint('DisputeData.fromDispute: User role = $finalUserRole');
     }
 
     // Get the appropriate description key based on status and creator
     final descriptionKey = _getDescriptionKeyForStatus(
-      dispute.status ?? 'unknown', 
+      dispute.status ?? 'unknown',
       isUserCreator,
       hasAdmin: dispute.hasAdmin,
     );
 
     return DisputeData(
       disputeId: dispute.disputeId,
-      orderId: dispute.orderId ?? (orderState?.order?.id), // Use order from orderState if dispute.orderId is null
+      orderId: dispute.orderId ??
+          (orderState?.order
+              ?.id), // Use order from orderState if dispute.orderId is null
       status: dispute.status ?? 'initiated',
       descriptionKey: descriptionKey,
       counterparty: counterpartyName,
@@ -432,13 +441,15 @@ class DisputeData {
   }
 
   /// Create DisputeData from DisputeEvent (legacy method)
-  factory DisputeData.fromDisputeEvent(dynamic disputeEvent, {String? userAction}) {
+  factory DisputeData.fromDisputeEvent(dynamic disputeEvent,
+      {String? userAction}) {
     // Determine if user is the creator based on the action or other indicators
     bool? isUserCreator = _determineIfUserIsCreator(disputeEvent, userAction);
-    
+
     // Get the appropriate description key based on status and creator
-    final descriptionKey = _getDescriptionKeyForStatus(disputeEvent.status, isUserCreator);
-    
+    final descriptionKey =
+        _getDescriptionKeyForStatus(disputeEvent.status, isUserCreator);
+
     return DisputeData(
       disputeId: disputeEvent.disputeId,
       orderId: disputeEvent.orderId, // No fallback to hardcoded string
@@ -446,52 +457,57 @@ class DisputeData {
       descriptionKey: descriptionKey,
       counterparty: null, // Would need to fetch from order data
       isCreator: isUserCreator,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(
-        disputeEvent.createdAt is int 
-          ? (disputeEvent.createdAt <= 9999999999 
-              ? disputeEvent.createdAt * 1000  // Convert seconds to milliseconds
-              : disputeEvent.createdAt)        // Already in milliseconds
-          : DateTime.now().millisecondsSinceEpoch
-      ),
+      createdAt: DateTime.fromMillisecondsSinceEpoch(disputeEvent.createdAt
+              is int
+          ? (disputeEvent.createdAt <= 9999999999
+              ? disputeEvent.createdAt * 1000 // Convert seconds to milliseconds
+              : disputeEvent.createdAt) // Already in milliseconds
+          : DateTime.now().millisecondsSinceEpoch),
       userRole: UserRole.unknown, // Default value for legacy method
       action: null, // Legacy method doesn't have action info
     );
   }
 
   /// Determine if the user is the creator of the dispute
-  static bool? _determineIfUserIsCreator(dynamic disputeEvent, String? userAction) {
+  static bool? _determineIfUserIsCreator(
+      dynamic disputeEvent, String? userAction) {
     // If we have userAction information, use it to determine creator
     if (userAction != null) {
       return userAction == 'dispute-initiated-by-you';
     }
-    
+
     // Otherwise, return null for unknown state instead of assuming
     // This removes the fallback assumption that user is creator
     return null;
   }
 
   /// Get a description key for the dispute status
-  static DisputeDescriptionKey _getDescriptionKeyForStatus(String status, bool? isUserCreator, {bool hasAdmin = false}) {
+  static DisputeDescriptionKey _getDescriptionKeyForStatus(
+      String status, bool? isUserCreator,
+      {bool hasAdmin = false}) {
     if (kDebugMode) {
-      debugPrint('_getDescriptionKeyForStatus: status="$status", isUserCreator=$isUserCreator, hasAdmin=$hasAdmin');
+      debugPrint(
+          '_getDescriptionKeyForStatus: status="$status", isUserCreator=$isUserCreator, hasAdmin=$hasAdmin');
     }
     switch (status.toLowerCase()) {
       case 'initiated':
         // If admin has been assigned, it's in progress even if status says initiated
         if (hasAdmin) {
           if (kDebugMode) {
-            debugPrint('_getDescriptionKeyForStatus: returning inProgress (hasAdmin=true)');
+            debugPrint(
+                '_getDescriptionKeyForStatus: returning inProgress (hasAdmin=true)');
           }
           return DisputeDescriptionKey.inProgress;
         }
         // For 'initiated' status, always show "admin will take this dispute soon"
         // regardless of who created it, since the key info is that it's waiting for admin
         if (kDebugMode) {
-          debugPrint('_getDescriptionKeyForStatus: returning initiatedPendingAdmin (status=initiated, waiting for admin)');
+          debugPrint(
+              '_getDescriptionKeyForStatus: returning initiatedPendingAdmin (status=initiated, waiting for admin)');
         }
         return isUserCreator == true
-          ? DisputeDescriptionKey.initiatedByUser
-          : DisputeDescriptionKey.initiatedPendingAdmin;
+            ? DisputeDescriptionKey.initiatedByUser
+            : DisputeDescriptionKey.initiatedPendingAdmin;
 
       case 'in-progress':
         return DisputeDescriptionKey.inProgress;
@@ -502,12 +518,13 @@ class DisputeData {
         return DisputeDescriptionKey.sellerRefunded;
       default:
         if (kDebugMode) {
-          debugPrint('_getDescriptionKeyForStatus: returning UNKNOWN for status="$status"');
+          debugPrint(
+              '_getDescriptionKeyForStatus: returning UNKNOWN for status="$status"');
         }
         return DisputeDescriptionKey.unknown;
     }
   }
-  
+
   /// Get localized description message
   String getLocalizedDescription(BuildContext context) {
     final l10n = S.of(context)!;
@@ -515,7 +532,6 @@ class DisputeData {
       case DisputeDescriptionKey.initiatedByUser:
         return l10n.disputeDescriptionInitiatedByUser;
       case DisputeDescriptionKey.initiatedByPeer:
-
         return l10n.disputeDescriptionInitiatedByPeer;
       case DisputeDescriptionKey.initiatedPendingAdmin:
         return l10n.disputeDescriptionInitiatedPendingAdmin;
@@ -531,16 +547,16 @@ class DisputeData {
     }
   }
 
-  
   /// Backward compatibility getter for userIsBuyer
   bool get userIsBuyer => userRole == UserRole.buyer;
-  
+
   /// Convenience getter for orderId with fallback
   String get orderIdDisplay => orderId ?? DisputeSemanticKeys.unknownOrderId;
-  
+
   /// Convenience getter for counterparty with fallback
-  String get counterpartyDisplay => counterparty ?? DisputeSemanticKeys.unknownCounterparty;
-  
+  String get counterpartyDisplay =>
+      counterparty ?? DisputeSemanticKeys.unknownCounterparty;
+
   /// Parse action string to Action enum
   /// This handles the conversion from stored string actions to enum values
   static enums.Action? _parseActionFromString(String actionString) {
@@ -556,7 +572,8 @@ class DisputeData {
         return enums.Action.adminSettled;
       default:
         if (kDebugMode) {
-          debugPrint('_parseActionFromString: Unknown action string "$actionString"');
+          debugPrint(
+              '_parseActionFromString: Unknown action string "$actionString"');
         }
         return null;
     }

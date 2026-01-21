@@ -15,15 +15,16 @@ final chatRoomsProvider =
     chatId,
     ref,
   );
-  
+
   // Initialize the notifier with proper error handling and safety checks
   _initializeChatRoomSafely(ref, notifier, chatId);
-  
+
   return notifier;
 });
 
 // Provider to track initialization status of chat rooms
-final chatRoomInitializedProvider = StateProvider.family<bool, String>((ref, chatId) => false);
+final chatRoomInitializedProvider =
+    StateProvider.family<bool, String>((ref, chatId) => false);
 
 // Logger instance for the chat room provider
 final _logger = Logger();
@@ -37,7 +38,7 @@ Future<void> _initializeChatRoomSafely(
   try {
     // Initialize the notifier
     await notifier.initialize();
-    
+
     // Check if the provider is still mounted before updating state
     // This prevents state updates on disposed objects
     if (ref.container.read(chatRoomsProvider(chatId).notifier).mounted) {
@@ -45,7 +46,8 @@ Future<void> _initializeChatRoomSafely(
       ref.read(chatRoomInitializedProvider(chatId).notifier).state = true;
       _logger.d('Chat room $chatId initialized successfully');
     } else {
-      _logger.w('Chat room $chatId provider was disposed during initialization');
+      _logger
+          .w('Chat room $chatId provider was disposed during initialization');
     }
   } catch (e, stackTrace) {
     // Use proper logging instead of print
@@ -54,7 +56,7 @@ Future<void> _initializeChatRoomSafely(
       error: e,
       stackTrace: stackTrace,
     );
-    
+
     // Only update error state if provider is still mounted
     if (ref.container.read(chatRoomsProvider(chatId).notifier).mounted) {
       // Keep initialization status as false on error

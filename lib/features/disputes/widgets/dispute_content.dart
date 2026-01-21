@@ -29,23 +29,24 @@ class _DisputeContentState extends ConsumerState<DisputeContent> {
   Widget build(BuildContext context) {
     // Watch the read status to trigger rebuilds when dispute is marked as read
     ref.watch(disputeReadStatusProvider(widget.dispute.disputeId));
-    
+
     // Get the last message for in-progress disputes
     String descriptionText = widget.dispute.getLocalizedDescription(context);
-    
+
     final normalizedStatus = _normalizeStatus(widget.dispute.status);
     if (normalizedStatus == 'in-progress') {
       // Try to get the last message from the chat
-      final chatState = ref.watch(disputeChatNotifierProvider(widget.dispute.disputeId));
+      final chatState =
+          ref.watch(disputeChatNotifierProvider(widget.dispute.disputeId));
       final messages = chatState.messages;
-      
+
       if (messages.isNotEmpty) {
         // Show the last message
         final lastMessage = messages.last;
         descriptionText = lastMessage.message;
       }
     }
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -60,7 +61,10 @@ class _DisputeContentState extends ConsumerState<DisputeContent> {
               FutureBuilder<bool>(
                 future: DisputeReadStatusService.hasUnreadMessages(
                   widget.dispute.disputeId,
-                  ref.watch(disputeChatNotifierProvider(widget.dispute.disputeId)).messages,
+                  ref
+                      .watch(
+                          disputeChatNotifierProvider(widget.dispute.disputeId))
+                      .messages,
                 ),
                 builder: (context, snapshot) {
                   final hasUnread = snapshot.data ?? false;

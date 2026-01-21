@@ -52,7 +52,8 @@ class FormSection extends StatelessWidget {
                 if (infoTooltip != null) ...[
                   const SizedBox(width: 4),
                   InkWell(
-                    onTap: () => _showInfoDialog(context, infoTitle ?? title, infoTooltip!),
+                    onTap: () => _showInfoDialog(
+                        context, infoTitle ?? title, infoTooltip!),
                     borderRadius: BorderRadius.circular(12),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),

@@ -10,7 +10,7 @@ class DisputeService {
   Future<List<Dispute>> getUserDisputes() async {
     // Mock implementation for UI testing
     await Future.delayed(const Duration(milliseconds: 500));
-    
+
     return [
       Dispute(
         disputeId: 'dispute_001',
@@ -33,11 +33,12 @@ class DisputeService {
   Future<Dispute?> getDispute(String disputeId) async {
     // Mock implementation
     await Future.delayed(const Duration(milliseconds: 300));
-    
+
     // Safe prefix extraction to avoid RangeError
     final prefixLen = min(8, disputeId.length);
-    final orderIdSuffix = disputeId.isEmpty ? 'unknown' : disputeId.substring(0, prefixLen);
-    
+    final orderIdSuffix =
+        disputeId.isEmpty ? 'unknown' : disputeId.substring(0, prefixLen);
+
     return Dispute(
       disputeId: disputeId,
       orderId: 'order_$orderIdSuffix',

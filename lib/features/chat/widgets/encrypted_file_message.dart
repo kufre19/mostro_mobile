@@ -25,7 +25,8 @@ class EncryptedFileMessage extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<EncryptedFileMessage> createState() => _EncryptedFileMessageState();
+  ConsumerState<EncryptedFileMessage> createState() =>
+      _EncryptedFileMessageState();
 }
 
 class _EncryptedFileMessageState extends ConsumerState<EncryptedFileMessage> {
@@ -35,13 +36,13 @@ class _EncryptedFileMessageState extends ConsumerState<EncryptedFileMessage> {
   @override
   Widget build(BuildContext context) {
     final chatNotifier = ref.read(chatRoomsProvider(widget.orderId).notifier);
-    
+
     // Check if message ID is valid
     final messageId = widget.message.id;
     if (messageId == null) {
       return _buildErrorWidget();
     }
-    
+
     // Check if file is already cached
     final cachedFile = chatNotifier.getCachedFile(messageId);
     final fileMetadata = chatNotifier.getFileMetadata(messageId);
@@ -85,7 +86,8 @@ class _EncryptedFileMessageState extends ConsumerState<EncryptedFileMessage> {
     return fileType == 'image';
   }
 
-  Widget _buildImagePreview(Uint8List imageData, EncryptedFileUploadResult metadata) {
+  Widget _buildImagePreview(
+      Uint8List imageData, EncryptedFileUploadResult metadata) {
     return Container(
       constraints: const BoxConstraints(
         maxWidth: 280,
@@ -190,10 +192,11 @@ class _EncryptedFileMessageState extends ConsumerState<EncryptedFileMessage> {
     );
   }
 
-  Widget _buildFileWidget(Uint8List? fileData, EncryptedFileUploadResult metadata) {
+  Widget _buildFileWidget(
+      Uint8List? fileData, EncryptedFileUploadResult metadata) {
     final icon = _getFileIcon(metadata.fileType);
     final isDownloaded = fileData != null;
-    
+
     return Container(
       constraints: const BoxConstraints(
         maxWidth: 280,
@@ -276,7 +279,9 @@ class _EncryptedFileMessageState extends ConsumerState<EncryptedFileMessage> {
                   size: 16,
                 ),
                 label: Text(
-                  isDownloaded ? S.of(context)!.openFile : S.of(context)!.download,
+                  isDownloaded
+                      ? S.of(context)!.openFile
+                      : S.of(context)!.download,
                   style: const TextStyle(fontSize: 13),
                 ),
                 style: ElevatedButton.styleFrom(
@@ -400,10 +405,7 @@ class _EncryptedFileMessageState extends ConsumerState<EncryptedFileMessage> {
       }
 
       final fileData = EncryptedFileUploadResult.fromJson(
-        Map<String, dynamic>.from(
-          jsonDecode(content) as Map
-        )
-      );
+          Map<String, dynamic>.from(jsonDecode(content) as Map));
 
       return fileData;
     } catch (e) {
@@ -424,7 +426,7 @@ class _EncryptedFileMessageState extends ConsumerState<EncryptedFileMessage> {
     try {
       final chatNotifier = ref.read(chatRoomsProvider(widget.orderId).notifier);
       final metadata = _parseFileMetadata();
-      
+
       if (metadata == null) {
         throw Exception('Invalid file message format');
       }
@@ -466,11 +468,11 @@ class _EncryptedFileMessageState extends ConsumerState<EncryptedFileMessage> {
       if (messageId == null) {
         throw Exception('Invalid message: missing ID');
       }
-      
+
       final chatNotifier = ref.read(chatRoomsProvider(widget.orderId).notifier);
       final cachedFile = chatNotifier.getCachedFile(messageId);
       final metadata = chatNotifier.getFileMetadata(messageId);
-      
+
       if (cachedFile == null || metadata == null) {
         throw Exception('File not available');
       }
@@ -479,19 +481,22 @@ class _EncryptedFileMessageState extends ConsumerState<EncryptedFileMessage> {
       final tempDir = await getTemporaryDirectory();
       final sanitizedFilename = _sanitizeFilename(metadata.filename);
       final tempFile = File('${tempDir.path}/$sanitizedFilename');
-      
+
       // Basic security check: ensure sanitized filename is safe
       // The sanitization function already handles most security concerns
-      if (sanitizedFilename.contains('/') || sanitizedFilename.contains('\\') || 
-          sanitizedFilename.contains('..') || sanitizedFilename.trim().isEmpty) {
-        throw Exception('Security error: Invalid characters in sanitized filename');
+      if (sanitizedFilename.contains('/') ||
+          sanitizedFilename.contains('\\') ||
+          sanitizedFilename.contains('..') ||
+          sanitizedFilename.trim().isEmpty) {
+        throw Exception(
+            'Security error: Invalid characters in sanitized filename');
       }
-      
+
       await tempFile.writeAsBytes(cachedFile);
 
       // Open file with system default app
       final result = await OpenFile.open(tempFile.path);
-      
+
       if (mounted) {
         if (result.type != ResultType.done) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -529,21 +534,31 @@ class _EncryptedFileMessageState extends ConsumerState<EncryptedFileMessage> {
   String _sanitizeFilename(String filename) {
     // 1. Get basename only (remove any directory components)
     final basename = filename.split(RegExp(r'[/\\]')).last;
-    
+
     // 2. Normalize accented characters to prevent encoding issues
     String normalized = basename
-        .replaceAll('á', 'a').replaceAll('é', 'e').replaceAll('í', 'i')
-        .replaceAll('ó', 'o').replaceAll('ú', 'u').replaceAll('ñ', 'n')
-        .replaceAll('ü', 'u').replaceAll('Á', 'A').replaceAll('É', 'E')
-        .replaceAll('Í', 'I').replaceAll('Ó', 'O').replaceAll('Ú', 'U')
-        .replaceAll('Ñ', 'N').replaceAll('Ü', 'U');
-    
+        .replaceAll('á', 'a')
+        .replaceAll('é', 'e')
+        .replaceAll('í', 'i')
+        .replaceAll('ó', 'o')
+        .replaceAll('ú', 'u')
+        .replaceAll('ñ', 'n')
+        .replaceAll('ü', 'u')
+        .replaceAll('Á', 'A')
+        .replaceAll('É', 'E')
+        .replaceAll('Í', 'I')
+        .replaceAll('Ó', 'O')
+        .replaceAll('Ú', 'U')
+        .replaceAll('Ñ', 'N')
+        .replaceAll('Ü', 'U');
+
     // 3. Replace spaces with underscores and remove dangerous characters
     final cleaned = normalized
-        .replaceAll(RegExp(r'\s+'), '_')  // Replace spaces with underscores
-        .replaceAll(RegExp(r'[<>:"|?*\x00-\x1F]'), '_')  // Remove dangerous chars
-        .replaceAll('..', '_');  // Prevent directory traversal patterns
-    
+        .replaceAll(RegExp(r'\s+'), '_') // Replace spaces with underscores
+        .replaceAll(
+            RegExp(r'[<>:"|?*\x00-\x1F]'), '_') // Remove dangerous chars
+        .replaceAll('..', '_'); // Prevent directory traversal patterns
+
     // 4. Preserve file extension
     String sanitized = cleaned;
     if (sanitized.contains('.')) {
@@ -552,27 +567,51 @@ class _EncryptedFileMessageState extends ConsumerState<EncryptedFileMessage> {
         final extension = parts.last;
         final nameWithoutExt = parts.sublist(0, parts.length - 1).join('_');
         final maxNameLength = 100 - extension.length - 1;
-        final truncatedName = nameWithoutExt.length > maxNameLength 
+        final truncatedName = nameWithoutExt.length > maxNameLength
             ? nameWithoutExt.substring(0, maxNameLength)
             : nameWithoutExt;
         sanitized = '$truncatedName.$extension';
       }
     } else {
       // No extension, just limit length
-      sanitized = sanitized.length > 100 ? sanitized.substring(0, 100) : sanitized;
+      sanitized =
+          sanitized.length > 100 ? sanitized.substring(0, 100) : sanitized;
     }
-    
+
     // 5. Ensure not empty and not Windows reserved names
-    final nameOnly = sanitized.contains('.') ? sanitized.split('.').first : sanitized;
-    if (sanitized.isEmpty || nameOnly.isEmpty ||
-        ['CON', 'PRN', 'AUX', 'NUL', 'COM1', 'COM2', 'COM3', 'COM4', 'COM5', 
-         'COM6', 'COM7', 'COM8', 'COM9', 'LPT1', 'LPT2', 'LPT3', 'LPT4', 
-         'LPT5', 'LPT6', 'LPT7', 'LPT8', 'LPT9'].contains(nameOnly.toUpperCase())) {
-      final extension = sanitized.contains('.') ? '.${sanitized.split('.').last}' : '';
+    final nameOnly =
+        sanitized.contains('.') ? sanitized.split('.').first : sanitized;
+    if (sanitized.isEmpty ||
+        nameOnly.isEmpty ||
+        [
+          'CON',
+          'PRN',
+          'AUX',
+          'NUL',
+          'COM1',
+          'COM2',
+          'COM3',
+          'COM4',
+          'COM5',
+          'COM6',
+          'COM7',
+          'COM8',
+          'COM9',
+          'LPT1',
+          'LPT2',
+          'LPT3',
+          'LPT4',
+          'LPT5',
+          'LPT6',
+          'LPT7',
+          'LPT8',
+          'LPT9'
+        ].contains(nameOnly.toUpperCase())) {
+      final extension =
+          sanitized.contains('.') ? '.${sanitized.split('.').last}' : '';
       return 'file_${DateTime.now().millisecondsSinceEpoch}$extension';
     }
-    
+
     return sanitized;
   }
 }
-

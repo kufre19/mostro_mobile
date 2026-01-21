@@ -71,7 +71,7 @@ class _KeyManagementScreenState extends ConsumerState<KeyManagementScreen> {
     await eventStorage.deleteAll();
 
     await ref.read(notificationsRepositoryProvider).clearAll();
-    
+
     final keyManager = ref.read(keyManagerProvider);
     await keyManager.generateAndStoreMasterKey();
 
@@ -289,7 +289,9 @@ class _KeyManagementScreenState extends ConsumerState<KeyManagementScreen> {
                           });
                           // Dismiss backup reminder when user views seed phrase
                           if (_showSecretWords) {
-                            ref.read(backupReminderProvider.notifier).dismissBackupReminder();
+                            ref
+                                .read(backupReminderProvider.notifier)
+                                .dismissBackupReminder();
                           }
                         },
                         icon: Icon(
@@ -798,7 +800,8 @@ class _KeyManagementScreenState extends ConsumerState<KeyManagementScreen> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
               ),
               child: Text(
                 S.of(context)!.refresh,
@@ -815,7 +818,6 @@ class _KeyManagementScreenState extends ConsumerState<KeyManagementScreen> {
   }
 
   Future<void> _showImportMnemonicDialog(BuildContext context) async {
-
     final mnemonic = await showDialog<String>(
       context: context,
       builder: (BuildContext dialogContext) {

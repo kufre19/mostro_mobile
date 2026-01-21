@@ -6,7 +6,8 @@ class Settings {
   final String? selectedLanguage; // null means use system locale
   final String? defaultLightningAddress;
   final List<String> blacklistedRelays; // Relays blocked by user from auto-sync
-  final List<Map<String, dynamic>> userRelays; // User-added relays with metadata
+  final List<Map<String, dynamic>>
+      userRelays; // User-added relays with metadata
   final bool isLoggingEnabled;
 
   Settings({
@@ -67,9 +68,11 @@ class Settings {
       defaultFiatCode: json['defaultFiatCode'],
       selectedLanguage: json['selectedLanguage'],
       defaultLightningAddress: json['defaultLightningAddress'],
-      blacklistedRelays: (json['blacklistedRelays'] as List<dynamic>?)?.cast<String>() ?? [],
+      blacklistedRelays:
+          (json['blacklistedRelays'] as List<dynamic>?)?.cast<String>() ?? [],
       userRelays: (json['userRelays'] as List<dynamic>?)
-          ?.cast<Map<String, dynamic>>() ?? [],
+              ?.cast<Map<String, dynamic>>() ??
+          [],
       isLoggingEnabled: false,
     );
   }

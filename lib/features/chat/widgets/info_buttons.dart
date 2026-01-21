@@ -19,11 +19,13 @@ class InfoButtons extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: _buildInfoButton(context, S.of(context)!.tradeInformation, "trade"),
+            child: _buildInfoButton(
+                context, S.of(context)!.tradeInformation, "trade"),
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: _buildInfoButton(context, S.of(context)!.userInformation, "user"),
+            child: _buildInfoButton(
+                context, S.of(context)!.userInformation, "user"),
           ),
         ],
       ),
@@ -34,7 +36,7 @@ class InfoButtons extends StatelessWidget {
     final isSelected = selectedInfoType == type;
     final textLength = title.length;
     final textScaler = MediaQuery.of(context).textScaler;
-    
+
     // Adjust font size based on text length and scale factor
     final baseFontSize = textLength > 15 ? 13.0 : 14.0;
     final fontSize = baseFontSize / textScaler.scale(1.0).clamp(0.8, 1.5);
@@ -45,9 +47,8 @@ class InfoButtons extends StatelessWidget {
       child: ElevatedButton(
         onPressed: () => onInfoTypeChanged(isSelected ? null : type),
         style: ElevatedButton.styleFrom(
-          backgroundColor: isSelected
-              ? AppTheme.mostroGreen
-              : AppTheme.backgroundCard,
+          backgroundColor:
+              isSelected ? AppTheme.mostroGreen : AppTheme.backgroundCard,
           foregroundColor: isSelected ? Colors.black : AppTheme.textSecondary,
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
           shape: RoundedRectangleBorder(
@@ -67,7 +68,9 @@ class InfoButtons extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              type == 'trade' ? Icons.description_outlined : Icons.person_outline,
+              type == 'trade'
+                  ? Icons.description_outlined
+                  : Icons.person_outline,
               size: 18,
             ),
             const SizedBox(width: 6),

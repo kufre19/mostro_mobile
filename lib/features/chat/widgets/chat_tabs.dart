@@ -26,15 +26,17 @@ class ChatTabs extends ConsumerWidget {
       ),
       child: Row(
         children: [
-          _buildTabButton(context, ref, ChatTabType.messages, S.of(context)!.messages, currentTab == ChatTabType.messages),
-          _buildTabButton(context, ref, ChatTabType.disputes, S.of(context)!.disputes, currentTab == ChatTabType.disputes),
+          _buildTabButton(context, ref, ChatTabType.messages,
+              S.of(context)!.messages, currentTab == ChatTabType.messages),
+          _buildTabButton(context, ref, ChatTabType.disputes,
+              S.of(context)!.disputes, currentTab == ChatTabType.disputes),
         ],
       ),
     );
   }
 
-  Widget _buildTabButton(
-      BuildContext context, WidgetRef ref, ChatTabType tabType, String text, bool isActive) {
+  Widget _buildTabButton(BuildContext context, WidgetRef ref,
+      ChatTabType tabType, String text, bool isActive) {
     return Expanded(
       child: InkWell(
         onTap: () {

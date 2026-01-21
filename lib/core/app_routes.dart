@@ -38,8 +38,9 @@ GoRouter createRouter(WidgetRef ref) {
     initialLocation: '/',
     redirect: (context, state) {
       // Redirect custom schemes to home to prevent assertion failures
-      if (state.uri.scheme == 'mostro' || 
-          (!state.uri.scheme.startsWith('http') && state.uri.scheme.isNotEmpty)) {
+      if (state.uri.scheme == 'mostro' ||
+          (!state.uri.scheme.startsWith('http') &&
+              state.uri.scheme.isNotEmpty)) {
         return '/';
       }
       final firstRunState = ref.read(firstRunProvider);
@@ -54,7 +55,9 @@ GoRouter createRouter(WidgetRef ref) {
         loading: () {
           // While loading, prevent navigation to home by redirecting to walkthrough
           // The walkthrough route will handle the loading state appropriately
-          return state.matchedLocation == '/walkthrough' ? null : '/walkthrough';
+          return state.matchedLocation == '/walkthrough'
+              ? null
+              : '/walkthrough';
         },
         error: (_, __) => null,
       );
@@ -62,7 +65,7 @@ GoRouter createRouter(WidgetRef ref) {
     errorBuilder: (context, state) {
       final logger = Logger();
       logger.w('GoRouter error: ${state.error}');
-      
+
       // For errors, show a generic error page
       return Scaffold(
         body: Center(
@@ -71,7 +74,9 @@ GoRouter createRouter(WidgetRef ref) {
             children: [
               const Icon(Icons.error, size: 64),
               const SizedBox(height: 16),
-              Text(S.of(context)!.deepLinkNavigationError(state.error.toString())),
+              Text(S
+                  .of(context)!
+                  .deepLinkNavigationError(state.error.toString())),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => context.go('/'),
@@ -83,7 +88,7 @@ GoRouter createRouter(WidgetRef ref) {
       );
     },
     routes: [
-    ShellRoute(
+      ShellRoute(
         builder: (BuildContext context, GoRouterState state, Widget child) {
           return NotificationListenerWidget(
             child: NavigationListenerWidget(

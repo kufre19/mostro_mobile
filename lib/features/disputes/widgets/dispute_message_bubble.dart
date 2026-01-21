@@ -23,20 +23,25 @@ class DisputeMessageBubble extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       alignment: isFromUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Row(
-        mainAxisAlignment: isFromUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment:
+            isFromUser ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           Flexible(
             child: ConstrainedBox(
               constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.75, // Max 75% of screen width
+                maxWidth: MediaQuery.of(context).size.width *
+                    0.75, // Max 75% of screen width
                 minWidth: 0,
               ),
               child: GestureDetector(
                 onLongPress: () => _copyToClipboard(context, message),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: isFromUser ? AppTheme.purpleAccent : _getAdminMessageColor(),
+                    color: isFromUser
+                        ? AppTheme.purpleAccent
+                        : _getAdminMessageColor(),
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(16),
                       topRight: const Radius.circular(16),
@@ -77,10 +82,10 @@ class DisputeMessageBubble extends StatelessWidget {
   Color _getAdminMessageColor() {
     // Use admin blue color with same transparency approach as peer messages
     const Color adminBlue = AppTheme.createdByYouChip;
-    
+
     // Create a subdued version by reducing saturation and value like peer messages
     final HSVColor hsvColor = HSVColor.fromColor(adminBlue);
-    
+
     // Create a more subdued version with lower saturation and value
     // but keep enough color to be recognizable (same logic as peer messages)
     return hsvColor.withSaturation(0.3).withValue(0.25).toColor();
@@ -90,7 +95,8 @@ class DisputeMessageBubble extends StatelessWidget {
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(S.of(context)?.messageCopiedToClipboard ?? 'Message copied to clipboard'),
+        content: Text(S.of(context)?.messageCopiedToClipboard ??
+            'Message copied to clipboard'),
         duration: const Duration(seconds: 1),
         backgroundColor: Colors.green,
       ),
@@ -100,7 +106,7 @@ class DisputeMessageBubble extends StatelessWidget {
   String _formatTime(DateTime dateTime) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
-    
+
     if (difference.inMinutes < 1) {
       return 'now';
     } else if (difference.inMinutes < 60) {

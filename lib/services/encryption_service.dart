@@ -16,33 +16,36 @@ class EncryptionResult {
 
   /// Combine encrypted data and auth tag into a single blob for storage
   Uint8List toBlob() {
-    final blob = Uint8List(nonce.length + encryptedData.length + authTag.length);
+    final blob =
+        Uint8List(nonce.length + encryptedData.length + authTag.length);
     int offset = 0;
-    
+
     // Structure: [nonce][encrypted_data][auth_tag]
     blob.setRange(offset, offset + nonce.length, nonce);
     offset += nonce.length;
-    
+
     blob.setRange(offset, offset + encryptedData.length, encryptedData);
     offset += encryptedData.length;
-    
+
     blob.setRange(offset, offset + authTag.length, authTag);
-    
+
     return blob;
   }
 
   /// Extract components from a blob
   static EncryptionResult fromBlob(Uint8List blob) {
-    if (blob.length < 28) { // 12 (nonce) + 16 (auth tag) = minimum 28 bytes
+    if (blob.length < 28) {
+      // 12 (nonce) + 16 (auth tag) = minimum 28 bytes
       throw ArgumentError('Blob too small for ChaCha20-Poly1305');
     }
 
     const nonceLength = 12;
     const authTagLength = 16;
-    
+
     final nonce = blob.sublist(0, nonceLength);
     final authTag = blob.sublist(blob.length - authTagLength);
-    final encryptedData = blob.sublist(nonceLength, blob.length - authTagLength);
+    final encryptedData =
+        blob.sublist(nonceLength, blob.length - authTagLength);
 
     return EncryptionResult(
       encryptedData: encryptedData,
@@ -98,7 +101,7 @@ class EncryptionService {
     try {
       // Create ChaCha20-Poly1305 cipher
       final cipher = ChaCha20Poly1305(ChaCha7539Engine(), Poly1305());
-      
+
       // Initialize with key and nonce
       final params = AEADParameters(
         KeyParameter(key),
@@ -106,7 +109,7 @@ class EncryptionService {
         nonce,
         additionalData ?? Uint8List(0),
       );
-      
+
       cipher.init(true, params); // true for encryption
 
       // Encrypt the data
@@ -118,7 +121,8 @@ class EncryptionService {
       final encryptedData = output.sublist(0, plaintext.length);
       final authTag = output.sublist(plaintext.length, len);
 
-      _logger.i('✅ Encryption successful: ${encryptedData.length} bytes + ${authTag.length} bytes tag');
+      _logger.i(
+          '✅ Encryption successful: ${encryptedData.length} bytes + ${authTag.length} bytes tag');
 
       return EncryptionResult(
         encryptedData: encryptedData,
@@ -149,12 +153,13 @@ class EncryptionService {
       throw ArgumentError('Poly1305 authentication tag must be 16 bytes');
     }
 
-    _logger.d('Decrypting ${encryptedData.length} bytes with ChaCha20-Poly1305');
+    _logger
+        .d('Decrypting ${encryptedData.length} bytes with ChaCha20-Poly1305');
 
     try {
       // Create ChaCha20-Poly1305 cipher
       final cipher = ChaCha20Poly1305(ChaCha7539Engine(), Poly1305());
-      
+
       // Initialize with key and nonce
       final params = AEADParameters(
         KeyParameter(key),
@@ -162,7 +167,7 @@ class EncryptionService {
         nonce,
         additionalData ?? Uint8List(0),
       );
-      
+
       cipher.init(false, params); // false for decryption
 
       // Combine encrypted data and auth tag for input
@@ -172,11 +177,12 @@ class EncryptionService {
 
       // Decrypt the data
       final output = Uint8List(cipher.getOutputSize(cipherInput.length));
-      int len = cipher.processBytes(cipherInput, 0, cipherInput.length, output, 0);
+      int len =
+          cipher.processBytes(cipherInput, 0, cipherInput.length, output, 0);
       len += cipher.doFinal(output, len);
 
       final decryptedData = output.sublist(0, len);
-      
+
       _logger.i('✅ Decryption successful: ${decryptedData.length} bytes');
 
       return decryptedData;

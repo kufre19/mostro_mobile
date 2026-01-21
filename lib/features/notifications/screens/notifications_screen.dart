@@ -18,16 +18,16 @@ class NotificationsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final notifications = ref.watch(notificationsHistoryProvider);
     final shouldShowBackupReminder = ref.watch(backupReminderProvider);
-    
+
     return Scaffold(
       backgroundColor: AppTheme.backgroundDark,
       appBar: MostroAppBar(
         title: Text(
           S.of(context)!.notifications,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: AppTheme.textPrimary,
-          ),
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
         ),
         showBackButton: true,
         showDrawerButton: false,
@@ -56,16 +56,16 @@ class NotificationsScreen extends ConsumerWidget {
                   Text(
                     S.of(context)!.noNotifications,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: AppTheme.textSecondary,
-                      fontWeight: FontWeight.w500,
-                    ),
+                          color: AppTheme.textSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     S.of(context)!.noNotificationsDescription,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppTheme.textSecondary,
-                    ),
+                          color: AppTheme.textSecondary,
+                        ),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -74,7 +74,8 @@ class NotificationsScreen extends ConsumerWidget {
           }
 
           // Calculate total items (backup reminder + regular notifications)
-          final totalItems = (shouldShowBackupReminder ? 1 : 0) + notificationList.length;
+          final totalItems =
+              (shouldShowBackupReminder ? 1 : 0) + notificationList.length;
 
           return RefreshIndicator(
             onRefresh: () async {
@@ -91,11 +92,12 @@ class NotificationsScreen extends ConsumerWidget {
                     child: BackupReminderNotification(),
                   );
                 }
-                
+
                 // Adjust index for regular notifications
-                final notificationIndex = shouldShowBackupReminder ? index - 1 : index;
+                final notificationIndex =
+                    shouldShowBackupReminder ? index - 1 : index;
                 final notification = notificationList[notificationIndex];
-                
+
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: NotificationItem(
@@ -125,9 +127,9 @@ class NotificationsScreen extends ConsumerWidget {
               Text(
                 S.of(context)!.errorLoadingNotifications,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: AppTheme.statusError,
-                  fontWeight: FontWeight.w500,
-                ),
+                      color: AppTheme.statusError,
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
               const SizedBox(height: 16),
               ElevatedButton(

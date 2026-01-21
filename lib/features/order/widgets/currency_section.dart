@@ -54,7 +54,8 @@ class CurrencySection extends ConsumerWidget {
                 currentSelection: selectedFiatCode,
               );
               if (selectedCode != null) {
-                ref.read(selectedFiatCodeProvider.notifier).state = selectedCode;
+                ref.read(selectedFiatCodeProvider.notifier).state =
+                    selectedCode;
                 onCurrencySelected();
               }
             },
@@ -80,5 +81,4 @@ class CurrencySection extends ConsumerWidget {
       ),
     );
   }
-
 }

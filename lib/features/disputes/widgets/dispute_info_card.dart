@@ -19,12 +19,13 @@ class DisputeInfoCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Resolve counterparty pubkey to readable nym
     // Only lookup nickname if we have a meaningful counterparty (not the semantic unknown key)
-    final hasCounterparty = dispute.counterpartyDisplay != DisputeSemanticKeys.unknownCounterparty && 
-                            dispute.counterpartyDisplay.trim().isNotEmpty;
+    final hasCounterparty = dispute.counterpartyDisplay !=
+            DisputeSemanticKeys.unknownCounterparty &&
+        dispute.counterpartyDisplay.trim().isNotEmpty;
     final counterpartyNym = hasCounterparty
         ? ref.watch(nickNameProvider(dispute.counterpartyDisplay))
         : S.of(context)!.unknown;
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -40,9 +41,11 @@ class DisputeInfoCard extends ConsumerWidget {
               Expanded(
                 child: Text(
                   S.of(context)!.disputeWith(
-                    dispute.userIsBuyer ? S.of(context)!.seller : S.of(context)!.buyer,
-                    counterpartyNym,
-                  ),
+                        dispute.userIsBuyer
+                            ? S.of(context)!.seller
+                            : S.of(context)!.buyer,
+                        counterpartyNym,
+                      ),
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
@@ -54,15 +57,17 @@ class DisputeInfoCard extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 16),
-          
+
           // Order ID
-          _buildInfoRow(context, S.of(context)!.orderIdLabel, dispute.orderIdDisplay),
+          _buildInfoRow(
+              context, S.of(context)!.orderIdLabel, dispute.orderIdDisplay),
           const SizedBox(height: 8),
-          
+
           // Dispute ID
-          _buildInfoRow(context, S.of(context)!.disputeIdLabel, dispute.disputeId),
+          _buildInfoRow(
+              context, S.of(context)!.disputeIdLabel, dispute.disputeId),
           const SizedBox(height: 16),
-          
+
           // Dispute description - conditional based on status
           DisputeStatusContent(dispute: dispute),
         ],

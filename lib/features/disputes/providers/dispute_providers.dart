@@ -9,21 +9,23 @@ import 'package:mostro_mobile/shared/providers/session_notifier_provider.dart';
 import 'package:mostro_mobile/features/order/providers/order_notifier_provider.dart';
 
 /// Provider for the dispute repository
-final disputeRepositoryProvider = Provider.autoDispose<DisputeRepository>((ref) {
+final disputeRepositoryProvider =
+    Provider.autoDispose<DisputeRepository>((ref) {
   final nostrService = ref.watch(nostrServiceProvider);
   final settings = ref.watch(settingsProvider);
   final mostroPubkey = settings.mostroPublicKey;
-  
+
   return DisputeRepository(nostrService, mostroPubkey, ref);
 });
 
 /// Provider for dispute details - uses real data from repository
-final disputeDetailsProvider = FutureProvider.family<Dispute?, String>((ref, disputeId) async {
+final disputeDetailsProvider =
+    FutureProvider.family<Dispute?, String>((ref, disputeId) async {
   final repository = ref.watch(disputeRepositoryProvider);
-  
+
   // Watch all sessions to invalidate when they change
   final sessions = ref.watch(sessionNotifierProvider);
-  
+
   // First try to find the specific order that contains this dispute
   String? targetOrderId;
   for (final session in sessions) {
@@ -39,7 +41,7 @@ final disputeDetailsProvider = FutureProvider.family<Dispute?, String>((ref, dis
       }
     }
   }
-  
+
   // If we found the specific order, watch only that one for optimal performance
   if (targetOrderId != null) {
     ref.watch(orderNotifierProvider(targetOrderId));
@@ -55,10 +57,9 @@ final disputeDetailsProvider = FutureProvider.family<Dispute?, String>((ref, dis
       }
     }
   }
-  
+
   return repository.getDispute(disputeId);
 });
-
 
 // The disputeChatNotifierProvider is now the main provider for dispute chat
 // It's defined in dispute_chat_notifier.dart
@@ -67,10 +68,9 @@ final disputeDetailsProvider = FutureProvider.family<Dispute?, String>((ref, dis
 final userDisputesProvider = FutureProvider<List<Dispute>>((ref) async {
   final repository = ref.watch(disputeRepositoryProvider);
 
-  
   // Watch all sessions to invalidate when order states change
   final sessions = ref.watch(sessionNotifierProvider);
-  
+
   // Watch order states for all sessions to trigger refresh when disputes update
   for (final session in sessions) {
     if (session.orderId != null) {
@@ -81,7 +81,6 @@ final userDisputesProvider = FutureProvider<List<Dispute>>((ref) async {
       }
     }
   }
-  
 
   return repository.getUserDisputes();
 });
@@ -90,7 +89,7 @@ final userDisputesProvider = FutureProvider<List<Dispute>>((ref) async {
 /// This provider automatically updates when disputes change
 final userDisputeDataProvider = Provider<AsyncValue<List<DisputeData>>>((ref) {
   final disputesAsync = ref.watch(userDisputesProvider);
-  
+
   return disputesAsync.when(
     data: (disputes) {
       final sessions = ref.read(sessionNotifierProvider);
@@ -104,7 +103,8 @@ final userDisputeDataProvider = Provider<AsyncValue<List<DisputeData>>>((ref) {
         for (final session in sessions) {
           if (session.orderId != null) {
             try {
-              final orderState = ref.read(orderNotifierProvider(session.orderId!));
+              final orderState =
+                  ref.read(orderNotifierProvider(session.orderId!));
 
               // Check if this order state contains our dispute
               if (orderState.dispute?.disputeId == dispute.disputeId) {
@@ -132,7 +132,7 @@ final userDisputeDataProvider = Provider<AsyncValue<List<DisputeData>>>((ref) {
         // If we found matching order state, use it for context
         if (matchingSession != null && matchingOrderState != null) {
           return DisputeData.fromDispute(
-            dispute, 
+            dispute,
             orderState: matchingOrderState,
             userRole: userRole,
           );
@@ -147,7 +147,7 @@ final userDisputeDataProvider = Provider<AsyncValue<List<DisputeData>>>((ref) {
 
       // Sort disputes by creation date - most recent first
       disputeDataList.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-      
+
       return AsyncValue.data(disputeDataList);
     },
     loading: () => const AsyncValue.loading(),

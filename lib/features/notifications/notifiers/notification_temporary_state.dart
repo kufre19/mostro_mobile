@@ -39,7 +39,8 @@ class TemporaryNotification {
           customMessage == other.customMessage;
 
   @override
-  int get hashCode => Object.hash(action, const DeepCollectionEquality().hash(values), show, customMessage);
+  int get hashCode => Object.hash(
+      action, const DeepCollectionEquality().hash(values), show, customMessage);
 
   @override
   String toString() {

@@ -69,7 +69,7 @@ class MockSettingsNotifier extends SettingsNotifier {
 class MockSessionNotifier extends SessionNotifier {
   Session? _mockSession;
   List<Session> _mockSessions = [];
-  
+
   MockSessionNotifier(super.ref, MockKeyManager keyManager,
       MockSessionStorage super.sessionStorage, MockSettings super.settings);
 
@@ -77,7 +77,7 @@ class MockSessionNotifier extends SessionNotifier {
   void setMockSession(Session? session) {
     _mockSession = session;
   }
-  
+
   void setMockSessions(List<Session> sessions) {
     _mockSessions = sessions;
   }

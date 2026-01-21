@@ -34,7 +34,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoom> {
   ProviderSubscription<Session?>? _sessionListener;
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
-  
+
   /// Exposes the mounted status of the notifier
   /// Returns true if the notifier is still active and hasn't been disposed
   @override
@@ -149,10 +149,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoom> {
       }
 
       final chat = await event.p2pUnwrap(session.sharedKey!);
-      
+
       // Process special message types (e.g., encrypted images)
       await _processMessageContent(chat);
-      
+
       // Check if message already exists to prevent duplicates
       final messageExists = state.messages.any((m) => m.id == chat.id);
       if (!messageExists) {
@@ -160,7 +160,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoom> {
         final updatedMessages = [...state.messages, chat];
         updatedMessages.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
         state = state.copy(messages: updatedMessages);
-        _logger.d('New message added from relay, total messages: ${updatedMessages.length}');
+        _logger.d(
+            'New message added from relay, total messages: ${updatedMessages.length}');
       } else {
         _logger.d('Message already exists in state, skipping duplicate');
       }
@@ -207,7 +208,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoom> {
       try {
         await ref.read(nostrServiceProvider).publishEvent(wrappedEvent);
         _logger.d('Message sent successfully to network');
-        
+
         // Add the inner event to state immediately for optimistic UI
         // The relay will echo it back and _onChatEvent will handle deduplication
         final messageExists = state.messages.any((m) => m.id == innerEvent.id);
@@ -215,13 +216,14 @@ class ChatRoomNotifier extends StateNotifier<ChatRoom> {
           final updatedMessages = [...state.messages, innerEvent];
           updatedMessages.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
           state = state.copy(messages: updatedMessages);
-          _logger.d('Message added to state optimistically, total messages: ${updatedMessages.length}');
+          _logger.d(
+              'Message added to state optimistically, total messages: ${updatedMessages.length}');
         } else {
           _logger.d('Message already exists in state, skipping add');
         }
-        
       } catch (publishError, publishStack) {
-        _logger.e('Failed to publish message: $publishError', stackTrace: publishStack);
+        _logger.e('Failed to publish message: $publishError',
+            stackTrace: publishStack);
         rethrow; // Re-throw to be caught by outer catch
       }
 
@@ -386,19 +388,21 @@ class ChatRoomNotifier extends StateNotifier<ChatRoom> {
   Future<Uint8List> getSharedKey() async {
     final session = ref.read(sessionProvider(orderId));
     if (session == null || session.sharedKey == null) {
-      throw Exception('Session or shared key not available for orderId: $orderId');
+      throw Exception(
+          'Session or shared key not available for orderId: $orderId');
     }
-    
+
     final hexKey = session.sharedKey!.private; // This should be hex string
-    
+
     // Validate hex key length
     if (hexKey.length != 64) {
-      throw Exception('Invalid shared key length for orderId $orderId: expected 64 hex chars, got ${hexKey.length}');
+      throw Exception(
+          'Invalid shared key length for orderId $orderId: expected 64 hex chars, got ${hexKey.length}');
     }
-    
+
     // Convert from NostrKeyPairs to Uint8List (32 bytes)
     final sharedKeyBytes = Uint8List(32);
-    
+
     try {
       // Convert hex string to bytes
       for (int i = 0; i < 32; i++) {
@@ -406,9 +410,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoom> {
         sharedKeyBytes[i] = byte;
       }
     } catch (e) {
-      throw Exception('Malformed shared key for orderId $orderId: invalid hex format - $e');
+      throw Exception(
+          'Malformed shared key for orderId $orderId: invalid hex format - $e');
     }
-    
+
     return sharedKeyBytes;
   }
 
@@ -443,7 +448,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoom> {
           await _processEncryptedFileMessage(message, jsonContent);
         }
       }
-      
     } catch (e) {
       _logger.w('Error processing message content: $e');
       // Don't rethrow - message should still be displayed as text
@@ -452,33 +456,31 @@ class ChatRoomNotifier extends StateNotifier<ChatRoom> {
 
   /// Process encrypted image message by pre-downloading and caching
   Future<void> _processEncryptedImageMessage(
-    NostrEvent message, 
-    Map<String, dynamic> imageData
-  ) async {
+      NostrEvent message, Map<String, dynamic> imageData) async {
     try {
       // Extract image metadata
       final result = EncryptedImageUploadResult.fromJson(imageData);
-      
+
       _logger.i('📥 Pre-downloading encrypted image: ${result.filename}');
       _logger.d('Blossom URL: ${result.blossomUrl}');
       _logger.d('Original size: ${result.originalSize} bytes');
-      
+
       // Get shared key for decryption
       final sharedKey = await getSharedKey();
-      
+
       // Download and decrypt image in background
       final uploadService = EncryptedImageUploadService();
       final decryptedImage = await uploadService.downloadAndDecryptImage(
         blossomUrl: result.blossomUrl,
         sharedKey: sharedKey,
       );
-      
-      _logger.i('✅ Image downloaded and decrypted successfully: ${decryptedImage.length} bytes');
-      
+
+      _logger.i(
+          '✅ Image downloaded and decrypted successfully: ${decryptedImage.length} bytes');
+
       // Cache the decrypted image for immediate display
       // You could store it in a Map<String, Uint8List> for quick access
       cacheDecryptedImage(message.id!, decryptedImage, result);
-      
     } catch (e) {
       _logger.e('❌ Failed to process encrypted image: $e');
       // Don't rethrow - message should still be displayed (maybe with error indicator)
@@ -488,17 +490,14 @@ class ChatRoomNotifier extends StateNotifier<ChatRoom> {
   // Simple cache for decrypted images
   final Map<String, Uint8List> _imageCache = {};
   final Map<String, EncryptedImageUploadResult> _imageMetadata = {};
-  
+
   // Simple cache for decrypted files
   final Map<String, Uint8List> _fileCache = {};
   final Map<String, EncryptedFileUploadResult> _fileMetadata = {};
 
   /// Cache a decrypted image for quick display
-  void cacheDecryptedImage(
-    String messageId, 
-    Uint8List imageData, 
-    EncryptedImageUploadResult metadata
-  ) {
+  void cacheDecryptedImage(String messageId, Uint8List imageData,
+      EncryptedImageUploadResult metadata) {
     _imageCache[messageId] = imageData;
     _imageMetadata[messageId] = metadata;
     _logger.d('🗄️ Cached decrypted image for message: $messageId');
@@ -516,37 +515,36 @@ class ChatRoomNotifier extends StateNotifier<ChatRoom> {
 
   /// Process encrypted file message by pre-downloading and caching
   Future<void> _processEncryptedFileMessage(
-    NostrEvent message, 
-    Map<String, dynamic> fileData
-  ) async {
+      NostrEvent message, Map<String, dynamic> fileData) async {
     try {
       // Extract file metadata
       final result = EncryptedFileUploadResult.fromJson(fileData);
-      
-      _logger.i('📥 File message received: ${result.filename} (${result.fileType})');
+
+      _logger.i(
+          '📥 File message received: ${result.filename} (${result.fileType})');
       _logger.d('Blossom URL: ${result.blossomUrl}');
       _logger.d('Original size: ${result.originalSize} bytes');
-      
+
       // Auto-download images for preview, but not other files
       if (result.fileType == 'image') {
         _logger.i('📸 Auto-downloading image for preview: ${result.filename}');
-        
+
         try {
           // Get shared key for decryption
           final sharedKey = await getSharedKey();
-          
+
           // Download and decrypt image in background
           final uploadService = EncryptedFileUploadService();
           final decryptedFile = await uploadService.downloadAndDecryptFile(
             blossomUrl: result.blossomUrl,
             sharedKey: sharedKey,
           );
-          
-          _logger.i('✅ Image downloaded and decrypted successfully: ${decryptedFile.length} bytes');
-          
+
+          _logger.i(
+              '✅ Image downloaded and decrypted successfully: ${decryptedFile.length} bytes');
+
           // Cache the decrypted image for immediate display
           cacheDecryptedFile(message.id!, decryptedFile, result);
-          
         } catch (e) {
           _logger.e('❌ Failed to auto-download image: $e');
           // Store metadata without file data - user can manually download
@@ -557,7 +555,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoom> {
         // Just store the metadata for display
         cacheDecryptedFile(message.id!, null, result);
       }
-      
     } catch (e) {
       _logger.e('❌ Failed to process encrypted file: $e');
       // Don't rethrow - message should still be displayed (maybe with error indicator)
@@ -565,11 +562,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoom> {
   }
 
   /// Cache a decrypted file for quick display
-  void cacheDecryptedFile(
-    String messageId, 
-    Uint8List? fileData, 
-    EncryptedFileUploadResult metadata
-  ) {
+  void cacheDecryptedFile(String messageId, Uint8List? fileData,
+      EncryptedFileUploadResult metadata) {
     if (fileData != null) {
       _fileCache[messageId] = fileData;
     }
@@ -586,7 +580,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoom> {
   EncryptedFileUploadResult? getFileMetadata(String messageId) {
     return _fileMetadata[messageId];
   }
-
 
   @override
   void dispose() {

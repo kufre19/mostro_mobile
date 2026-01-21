@@ -8,7 +8,8 @@ class ChatMessagesList extends StatefulWidget {
   final ChatRoom chatRoom;
   final String peerPubkey;
   final String orderId;
-  final ScrollController? scrollController; // Optional external scroll controller
+  final ScrollController?
+      scrollController; // Optional external scroll controller
 
   const ChatMessagesList({
     super.key,
@@ -31,7 +32,7 @@ class _ChatMessagesListState extends State<ChatMessagesList> {
     super.initState();
     // Use the provided controller or create our own
     _scrollController = widget.scrollController ?? ScrollController();
-    
+
     // Scroll to bottom on first load
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToBottom(animate: false);
@@ -46,8 +47,6 @@ class _ChatMessagesListState extends State<ChatMessagesList> {
     }
     super.dispose();
   }
-
-
 
   @override
   void didUpdateWidget(ChatMessagesList oldWidget) {
@@ -71,8 +70,8 @@ class _ChatMessagesListState extends State<ChatMessagesList> {
   void scrollToBottom({bool animate = true}) {
     // Ensure we're not in the middle of a build cycle
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients && 
-          widget.chatRoom.messages.isNotEmpty && 
+      if (_scrollController.hasClients &&
+          widget.chatRoom.messages.isNotEmpty &&
           _scrollController.position.maxScrollExtent > 0) {
         try {
           if (animate) {
@@ -82,7 +81,8 @@ class _ChatMessagesListState extends State<ChatMessagesList> {
               curve: Curves.easeOut,
             );
           } else {
-            _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+            _scrollController
+                .jumpTo(_scrollController.position.maxScrollExtent);
           }
         } catch (e) {
           // Silently handle any scroll errors
@@ -91,7 +91,7 @@ class _ChatMessagesListState extends State<ChatMessagesList> {
       }
     });
   }
-  
+
   // Keep the private method for internal use
   void _scrollToBottom({required bool animate}) {
     scrollToBottom(animate: animate);
@@ -122,7 +122,7 @@ class _ChatMessagesListState extends State<ChatMessagesList> {
           left: 12,
           right: 12,
           // Dynamic bottom padding based on device size and accessibility settings
-          bottom: MediaQuery.of(context).viewInsets.bottom > 0 
+          bottom: MediaQuery.of(context).viewInsets.bottom > 0
               ? 80 // Less padding when keyboard is open
               : MediaQuery.textScalerOf(context).scale(1.0) > 1.0
                   ? 120 // More padding for zoomed-in text

@@ -12,8 +12,12 @@ class TimestampText extends StatelessWidget {
     return Text(
       notification.timestamp.preciseTimeAgo(context),
       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-        color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
-      ),
+            color: Theme.of(context)
+                .textTheme
+                .bodySmall
+                ?.color
+                ?.withValues(alpha: 0.6),
+          ),
     );
   }
 }

@@ -132,7 +132,7 @@ class OrderState {
 
     // Handle dispute status updates based on action
     Dispute? updatedDispute = message.getPayload<Dispute>() ?? dispute;
-    
+
     // If we got a dispute from the message payload, ensure it has the message timestamp
     // This is critical for correct sorting in the dispute list
     if (updatedDispute != null && message.getPayload<Dispute>() != null) {
@@ -140,24 +140,27 @@ class OrderState {
       // Note: Nostr timestamps are in seconds, so convert to milliseconds
       if (message.timestamp != null) {
         final tsMs = message.timestamp! * 1000;
-        if (updatedDispute.createdAt == null || 
+        if (updatedDispute.createdAt == null ||
             updatedDispute.createdAt!.millisecondsSinceEpoch != tsMs) {
           updatedDispute = updatedDispute.copyWith(
             createdAt: DateTime.fromMillisecondsSinceEpoch(tsMs),
           );
-          _logger.i('Updated dispute ${updatedDispute.disputeId} createdAt from message timestamp: ${updatedDispute.createdAt}');
+          _logger.i(
+              'Updated dispute ${updatedDispute.disputeId} createdAt from message timestamp: ${updatedDispute.createdAt}');
         }
       }
     }
-    
+
     // Add defensive null check - if both message payload and existing dispute are null,
     // we cannot perform dispute updates
-    if (updatedDispute == null && 
-        (message.action == Action.adminTookDispute || 
-         message.action == Action.adminSettled || 
-         message.action == Action.adminCanceled)) {
-      _logger.w('Cannot update dispute for action ${message.action}: no dispute found in message payload or existing state');
-    } else if (message.action == Action.adminTookDispute && updatedDispute != null) {
+    if (updatedDispute == null &&
+        (message.action == Action.adminTookDispute ||
+            message.action == Action.adminSettled ||
+            message.action == Action.adminCanceled)) {
+      _logger.w(
+          'Cannot update dispute for action ${message.action}: no dispute found in message payload or existing state');
+    } else if (message.action == Action.adminTookDispute &&
+        updatedDispute != null) {
       // When admin takes dispute, update status to in-progress and set admin info
       // Extract admin pubkey from Peer payload if available
       String? adminPubkey = updatedDispute.adminPubkey;
@@ -168,27 +171,31 @@ class OrderState {
           _logger.i('Extracted admin pubkey from Peer payload: $adminPubkey');
         }
       }
-      
+
       updatedDispute = updatedDispute.copyWith(
         status: 'in-progress',
         adminTookAt: DateTime.now(),
         adminPubkey: adminPubkey,
       );
-      _logger.i('Updated dispute status to in-progress for adminTookDispute action');
-    } else if (message.action == Action.adminSettled && updatedDispute != null) {
+      _logger.i(
+          'Updated dispute status to in-progress for adminTookDispute action');
+    } else if (message.action == Action.adminSettled &&
+        updatedDispute != null) {
       // When admin settles dispute, update status to resolved with settlement info
       updatedDispute = updatedDispute.copyWith(
         status: 'resolved',
         action: 'admin-settled', // Store the resolution type
       );
       _logger.i('Updated dispute status to resolved for adminSettled action');
-    } else if (message.action == Action.adminCanceled && updatedDispute != null) {
+    } else if (message.action == Action.adminCanceled &&
+        updatedDispute != null) {
       // When admin cancels order, update dispute status to seller-refunded
       updatedDispute = updatedDispute.copyWith(
         status: 'seller-refunded',
         action: 'admin-canceled', // Store the resolution type
       );
-      _logger.i('Updated dispute status to seller-refunded for adminCanceled action');
+      _logger.i(
+          'Updated dispute status to seller-refunded for adminCanceled action');
       _logger.i('Dispute status updated to: ${updatedDispute.status}');
     }
 
@@ -208,8 +215,7 @@ class OrderState {
     );
 
     _logger.i('New state: ${newState.status} - ${newState.action}');
-    _logger
-        .i('PaymentRequest preserved: ${newState.paymentRequest != null}');
+    _logger.i('PaymentRequest preserved: ${newState.paymentRequest != null}');
 
     return newState;
   }
@@ -225,7 +231,7 @@ class OrderState {
       // Actions that should set status to waiting-buyer-invoice
       case Action.waitingBuyerInvoice:
         return Status.waitingBuyerInvoice;
-      
+
       case Action.addInvoice:
         // If current status is paymentFailed, maintain it for UI consistency
         // Otherwise, transition to waitingBuyerInvoice for normal flow
@@ -233,7 +239,6 @@ class OrderState {
           return Status.paymentFailed;
         }
         return Status.waitingBuyerInvoice;
-
 
       // FIX: Cuando alguien toma una orden, debe cambiar el status inmediatamente
 
@@ -307,7 +312,6 @@ class OrderState {
       // For actions that include Order payload, use the payload status
       case Action.newOrder:
         return payloadStatus ?? status;
-
 
       // For other actions, keep the current status unless payload has a different one
       default:

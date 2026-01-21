@@ -1,4 +1,3 @@
-
 import 'package:mostro_mobile/data/models/currency.dart';
 import 'package:intl/intl.dart';
 
@@ -25,17 +24,18 @@ class CurrencyUtils {
   }
 
   /// Get flag emoji from currency data - uses correct emoji from fiat.json
-  static String getFlagFromCurrencyData(String currencyCode, Map<String, Currency>? currencyData) {
+  static String getFlagFromCurrencyData(
+      String currencyCode, Map<String, Currency>? currencyData) {
     if (currencyData == null) {
       // Fallback to old method if data not available
       return getFlagFromCurrency(currencyCode) ?? '🏳️';
     }
-    
+
     final currency = currencyData[currencyCode.toUpperCase()];
     if (currency != null && currency.emoji.isNotEmpty) {
       return currency.emoji;
     }
-    
+
     // Fallback to generic flag if currency not found
     return '🏳️';
   }

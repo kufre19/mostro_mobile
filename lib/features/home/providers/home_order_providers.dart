@@ -10,8 +10,10 @@ final homeOrderTypeProvider = StateProvider((ref) => OrderType.sell);
 // Filter state providers
 final currencyFilterProvider = StateProvider<List<String>>((ref) => []);
 final paymentMethodFilterProvider = StateProvider<List<String>>((ref) => []);
-final ratingFilterProvider = StateProvider<({double min, double max})>((ref) => (min: 0.0, max: 5.0));
-final premiumRangeFilterProvider = StateProvider<({double min, double max})>((ref) => (min: -10.0, max: 10.0));
+final ratingFilterProvider =
+    StateProvider<({double min, double max})>((ref) => (min: 0.0, max: 5.0));
+final premiumRangeFilterProvider =
+    StateProvider<({double min, double max})>((ref) => (min: -10.0, max: 10.0));
 
 final filteredOrdersProvider = Provider<List<NostrEvent>>((ref) {
   final allOrdersAsync = ref.watch(orderEventsProvider);
@@ -32,9 +34,8 @@ final filteredOrdersProvider = Provider<List<NostrEvent>>((ref) {
 
       // Apply currency filter
       if (selectedCurrencies.isNotEmpty) {
-        filtered = filtered.where((o) => 
-          o.currency != null && selectedCurrencies.contains(o.currency!)
-        );
+        filtered = filtered.where((o) =>
+            o.currency != null && selectedCurrencies.contains(o.currency!));
       }
 
       // Apply payment method filter
@@ -55,11 +56,10 @@ final filteredOrdersProvider = Provider<List<NostrEvent>>((ref) {
 
       // Apply rating filter
       if (ratingRange.min > 0.0 || ratingRange.max < 5.0) {
-        filtered = filtered.where((o) => 
-          o.rating != null && 
-          o.rating!.totalRating >= ratingRange.min &&
-          o.rating!.totalRating <= ratingRange.max
-        );
+        filtered = filtered.where((o) =>
+            o.rating != null &&
+            o.rating!.totalRating >= ratingRange.min &&
+            o.rating!.totalRating <= ratingRange.max);
       }
 
       // Apply premium/discount filter
@@ -67,7 +67,8 @@ final filteredOrdersProvider = Provider<List<NostrEvent>>((ref) {
         filtered = filtered.where((o) {
           if (o.premium == null || o.premium!.isEmpty) return false;
           final premiumValue = double.tryParse(o.premium!) ?? 0.0;
-          return premiumValue >= premiumRange.min && premiumValue <= premiumRange.max;
+          return premiumValue >= premiumRange.min &&
+              premiumValue <= premiumRange.max;
         });
       }
 

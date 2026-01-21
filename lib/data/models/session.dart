@@ -13,6 +13,7 @@ class Session {
   final bool fullPrivacy;
   final DateTime startTime;
   String? orderId;
+
   /// Tracks the order that originated this session when it represents
   /// the preemptive child generated from a range order release.
   String? parentOrderId;
@@ -54,7 +55,13 @@ class Session {
   factory Session.fromJson(Map<String, dynamic> json) {
     try {
       // Validate required fields
-      final requiredFields = ['master_key', 'trade_key', 'key_index', 'full_privacy', 'start_time'];
+      final requiredFields = [
+        'master_key',
+        'trade_key',
+        'key_index',
+        'full_privacy',
+        'start_time'
+      ];
       for (final field in requiredFields) {
         if (!json.containsKey(field) || json[field] == null) {
           throw FormatException('Missing required field: $field');
@@ -70,22 +77,25 @@ class Session {
         keyIndex = int.tryParse(keyIndexValue) ??
             (throw FormatException('Invalid key_index format: $keyIndexValue'));
       } else {
-        throw FormatException('Invalid key_index type: ${keyIndexValue.runtimeType}');
+        throw FormatException(
+            'Invalid key_index type: ${keyIndexValue.runtimeType}');
       }
 
       if (keyIndex < 0) {
         throw FormatException('Key index cannot be negative: $keyIndex');
       }
 
-      // Validate key pair fields  
-      final masterKeyValue = json['master_key'];  
-      final tradeKeyValue = json['trade_key'];  
-      if (masterKeyValue is! NostrKeyPairs) {  
-        throw FormatException('Invalid master_key type: ${masterKeyValue.runtimeType}');  
-      }  
-      if (tradeKeyValue is! NostrKeyPairs) {  
-        throw FormatException('Invalid trade_key type: ${tradeKeyValue.runtimeType}');  
-      }  
+      // Validate key pair fields
+      final masterKeyValue = json['master_key'];
+      final tradeKeyValue = json['trade_key'];
+      if (masterKeyValue is! NostrKeyPairs) {
+        throw FormatException(
+            'Invalid master_key type: ${masterKeyValue.runtimeType}');
+      }
+      if (tradeKeyValue is! NostrKeyPairs) {
+        throw FormatException(
+            'Invalid trade_key type: ${tradeKeyValue.runtimeType}');
+      }
 
       // Parse fullPrivacy
       final fullPrivacyValue = json['full_privacy'];
@@ -95,7 +105,8 @@ class Session {
       } else if (fullPrivacyValue is String) {
         fullPrivacy = fullPrivacyValue.toLowerCase() == 'true';
       } else {
-        throw FormatException('Invalid full_privacy type: ${fullPrivacyValue.runtimeType}');
+        throw FormatException(
+            'Invalid full_privacy type: ${fullPrivacyValue.runtimeType}');
       }
 
       // Parse startTime
@@ -106,9 +117,11 @@ class Session {
           throw FormatException('Start time string cannot be empty');
         }
         startTime = DateTime.tryParse(startTimeValue) ??
-            (throw FormatException('Invalid start_time format: $startTimeValue'));
+            (throw FormatException(
+                'Invalid start_time format: $startTimeValue'));
       } else {
-        throw FormatException('Invalid start_time type: ${startTimeValue.runtimeType}');
+        throw FormatException(
+            'Invalid start_time type: ${startTimeValue.runtimeType}');
       }
 
       // Parse optional role

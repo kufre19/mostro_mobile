@@ -2,8 +2,10 @@
 enum RelaySource {
   /// User manually added this relay
   user,
+
   /// Relay discovered from Mostro instance kind 10002 event
   mostro,
+
   /// Default relay from app configuration (needed for initial connection)
   defaultConfig,
 }
@@ -79,13 +81,15 @@ class Relay {
   }
 
   /// Whether this relay was automatically discovered
-  bool get isAutoDiscovered => source == RelaySource.mostro || source == RelaySource.defaultConfig;
+  bool get isAutoDiscovered =>
+      source == RelaySource.mostro || source == RelaySource.defaultConfig;
 
   /// Whether this relay can be deleted by the user
   bool get canDelete => source == RelaySource.user;
 
   /// Whether this relay can be blacklisted (Mostro and default relays)
-  bool get canBlacklist => source == RelaySource.mostro || source == RelaySource.defaultConfig;
+  bool get canBlacklist =>
+      source == RelaySource.mostro || source == RelaySource.defaultConfig;
 
   @override
   bool operator ==(Object other) {
@@ -107,7 +111,8 @@ class MostroRelayInfo {
   final String url;
   final bool isActive; // true if currently being used, false if blacklisted
   final bool isHealthy; // health status (for active relays)
-  final RelaySource? source; // source of the relay (user, mostro, defaultConfig)
+  final RelaySource?
+      source; // source of the relay (user, mostro, defaultConfig)
 
   MostroRelayInfo({
     required this.url,

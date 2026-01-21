@@ -12,13 +12,13 @@ import 'package:mostro_mobile/data/enums.dart';
 class NotificationsNotifier extends StateNotifier<TemporaryNotificationsState> {
   final Ref ref;
   late final NotificationsRepository _repository;
-  
-  NotificationsNotifier(this.ref) : super(const TemporaryNotificationsState(
-    temporaryNotification: TemporaryNotification(),
-  )) {
+
+  NotificationsNotifier(this.ref)
+      : super(const TemporaryNotificationsState(
+          temporaryNotification: TemporaryNotification(),
+        )) {
     _repository = ref.read(notificationsRepositoryProvider);
   }
-
 
   Future<void> markAsRead(String notificationId) async {
     await _repository.markAsRead(notificationId);
@@ -31,7 +31,6 @@ class NotificationsNotifier extends StateNotifier<TemporaryNotificationsState> {
   Future<void> clearAll() async {
     await _repository.clearAll();
   }
-
 
   Future<void> addNotification(NotificationModel notification) async {
     await _repository.addNotification(notification);
@@ -66,12 +65,16 @@ class NotificationsNotifier extends StateNotifier<TemporaryNotificationsState> {
     );
   }
 
-  Future<void> addToHistory(Action action, {Map<String, dynamic> values = const {}, String? orderId, String? eventId}) async {
-    final notificationId = _generateDeterministicId(action, orderId, values, eventId);
+  Future<void> addToHistory(Action action,
+      {Map<String, dynamic> values = const {},
+      String? orderId,
+      String? eventId}) async {
+    final notificationId =
+        _generateDeterministicId(action, orderId, values, eventId);
 
     // Check if notification already exists in database
     final alreadyExists = await _repository.notificationExists(notificationId);
-    
+
     if (alreadyExists) {
       return;
     }
@@ -80,15 +83,17 @@ class NotificationsNotifier extends StateNotifier<TemporaryNotificationsState> {
       type: NotificationModel.getNotificationTypeFromAction(action),
       action: action,
       title: NotificationMessageMapper.getTitleKey(action),
-      message: NotificationMessageMapper.getMessageKeyWithContext(action, values),
+      message:
+          NotificationMessageMapper.getMessageKeyWithContext(action, values),
       timestamp: DateTime.now(),
       orderId: orderId,
       data: values,
     );
     await addNotification(notification);
   }
-  
-  String _generateDeterministicId(Action action, String? orderId, Map<String, dynamic> values, String? eventId) {
+
+  String _generateDeterministicId(Action action, String? orderId,
+      Map<String, dynamic> values, String? eventId) {
     // Create deterministic ID based on content
     final content = {
       'action': action.name,
@@ -96,24 +101,24 @@ class NotificationsNotifier extends StateNotifier<TemporaryNotificationsState> {
       'values': values,
       'eventId': eventId ?? '',
     };
-    
+
     // Sort keys for deterministic serialization
     final sortedContent = Map.fromEntries(
-      content.entries.toList()..sort((a, b) => a.key.compareTo(b.key))
-    );
-    
+        content.entries.toList()..sort((a, b) => a.key.compareTo(b.key)));
+
     final contentString = jsonEncode(sortedContent);
     final bytes = utf8.encode(contentString);
     final digest = sha256.convert(bytes);
-    
+
     return digest.toString();
   }
 
-  Future<void> notify(Action action, {Map<String, dynamic> values = const {}, String? orderId, String? eventId}) async {
-    
+  Future<void> notify(Action action,
+      {Map<String, dynamic> values = const {},
+      String? orderId,
+      String? eventId}) async {
     showTemporary(action, values: values);
-    await addToHistory(action, values: values, orderId: orderId, eventId: eventId);
+    await addToHistory(action,
+        values: values, orderId: orderId, eventId: eventId);
   }
-
-
 }

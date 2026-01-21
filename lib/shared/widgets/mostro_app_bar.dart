@@ -68,7 +68,7 @@ class MostroAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final bool showBackButton;
   final bool showDrawerButton;
   final List<Widget>? actions;
-  
+
   const MostroAppBar({
     super.key,
     this.title,
@@ -108,13 +108,14 @@ class MostroAppBar extends ConsumerWidget implements PreferredSizeWidget {
         ),
       );
     }
-    
+
     // Use provided actions or default to just notification bell
-    List<Widget> appBarActions = actions ?? [
-      const NotificationBellWidget(),
-      const SizedBox(width: 16),
-    ];
-    
+    List<Widget> appBarActions = actions ??
+        [
+          const NotificationBellWidget(),
+          const SizedBox(width: 16),
+        ];
+
     return AppBar(
       backgroundColor: AppTheme.backgroundDark,
       elevation: 0,

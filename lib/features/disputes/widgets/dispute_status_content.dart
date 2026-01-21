@@ -16,24 +16,28 @@ class DisputeStatusContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Resolve counterparty pubkey to readable nym
-    final hasCounterparty = dispute.counterpartyDisplay != DisputeSemanticKeys.unknownCounterparty && 
-                            dispute.counterpartyDisplay.trim().isNotEmpty;
+    final hasCounterparty = dispute.counterpartyDisplay !=
+            DisputeSemanticKeys.unknownCounterparty &&
+        dispute.counterpartyDisplay.trim().isNotEmpty;
     final counterpartyNym = hasCounterparty
         ? ref.watch(nickNameProvider(dispute.counterpartyDisplay))
         : S.of(context)!.unknown;
-    
+
     // Check if dispute is in a resolved/closed state
     final status = dispute.status.toLowerCase();
-    bool isResolved = status == 'resolved' || status == 'closed' || status == 'seller-refunded';
-    
+    bool isResolved = status == 'resolved' ||
+        status == 'closed' ||
+        status == 'seller-refunded';
+
     if (isResolved) {
       // Show resolution message for resolved/completed disputes
       // Get the appropriate message based on the resolution type and user role
       String message;
-      
+
       // Debug logging to track action and user role
-      debugPrint('DisputeStatusContent: status=$status, action=${dispute.action}, userRole=${dispute.userRole}');
-      
+      debugPrint(
+          'DisputeStatusContent: status=$status, action=${dispute.action}, userRole=${dispute.userRole}');
+
       // Check action first to determine the type of resolution
       if (dispute.action == 'admin-canceled' || status == 'seller-refunded') {
         // Admin canceled the order and refunded the seller
@@ -59,7 +63,7 @@ class DisputeStatusContent extends ConsumerWidget {
         // Fallback for generic resolved status without specific action
         message = S.of(context)!.disputeResolvedMessage;
       }
-      
+
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -123,7 +127,8 @@ class DisputeStatusContent extends ConsumerWidget {
           _buildBulletPoint(S.of(context)!.disputeInstruction1),
           _buildBulletPoint(S.of(context)!.disputeInstruction2),
           _buildBulletPoint(S.of(context)!.disputeInstruction3),
-          _buildBulletPoint(S.of(context)!.disputeInstruction4(counterpartyNym)),
+          _buildBulletPoint(
+              S.of(context)!.disputeInstruction4(counterpartyNym)),
         ],
       );
     }
@@ -159,7 +164,7 @@ class DisputeStatusContent extends ConsumerWidget {
       ),
     );
   }
-  
+
   /// Get the appropriate localized text based on the dispute description key
   String _getDisputeStatusText(BuildContext context, String counterpartyNym) {
     switch (dispute.descriptionKey) {
@@ -167,7 +172,9 @@ class DisputeStatusContent extends ConsumerWidget {
         // Use the appropriate message based on user role
         if (dispute.userRole == UserRole.buyer) {
           // User is buyer, so dispute is against seller
-          return S.of(context)!.disputeOpenedByYouAgainstSeller(counterpartyNym);
+          return S
+              .of(context)!
+              .disputeOpenedByYouAgainstSeller(counterpartyNym);
         } else if (dispute.userRole == UserRole.seller) {
           // User is seller, so dispute is against buyer
           return S.of(context)!.disputeOpenedByYouAgainstBuyer(counterpartyNym);

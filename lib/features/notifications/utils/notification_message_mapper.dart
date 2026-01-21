@@ -3,7 +3,7 @@ import 'package:mostro_mobile/data/models/enums/action.dart' as mostro;
 import 'package:mostro_mobile/generated/l10n.dart';
 
 /// Utility class to map Mostro actions to notification title and message keys
-/// 
+///
 /// This class provides exhaustive switch statements that handle all Action enum values.
 /// The compiler will enforce completeness, causing a compilation error if new enum values
 /// are added without corresponding cases in the switch statements.
@@ -92,10 +92,12 @@ class NotificationMessageMapper {
   }
 
   /// Maps an action to its corresponding notification message key with context values
-  static String getMessageKeyWithContext(mostro.Action action, Map<String, dynamic>? values) {
+  static String getMessageKeyWithContext(
+      mostro.Action action, Map<String, dynamic>? values) {
     // Handle special cases with context
     if (values != null && action == mostro.Action.addInvoice) {
-      if (values.containsKey('fiat_amount') && values.containsKey('failed_at')) {
+      if (values.containsKey('fiat_amount') &&
+          values.containsKey('failed_at')) {
         return 'notification_add_invoice_after_failure_message';
       }
     }
@@ -184,7 +186,6 @@ class NotificationMessageMapper {
       case mostro.Action.orders:
       case mostro.Action.lastTradeIndex:
         return 'TODO: implement message key if needed';
-      
     }
   }
 
@@ -194,11 +195,12 @@ class NotificationMessageMapper {
     return _resolveLocalizationKey(s, getTitleKey(action));
   }
 
-  /// Get localized message text directly from Action  
-  static String getLocalizedMessage(BuildContext context, mostro.Action action, {Map<String, dynamic>? values}) {
+  /// Get localized message text directly from Action
+  static String getLocalizedMessage(BuildContext context, mostro.Action action,
+      {Map<String, dynamic>? values}) {
     final s = S.of(context)!;
     final messageKey = getMessageKeyWithContext(action, values);
-    
+
     // Handle special keys that require parameters
     switch (messageKey) {
       case 'holdInvoicePaymentSettled':
@@ -340,17 +342,20 @@ class NotificationMessageMapper {
         return key; // Fallback to key if not found
     }
   }
-  
+
   /// Get localized title using S instance directly (for background notifications)
-  static String getLocalizedTitleWithInstance(S localizations, mostro.Action action) {
+  static String getLocalizedTitleWithInstance(
+      S localizations, mostro.Action action) {
     final titleKey = getTitleKey(action);
     return _resolveLocalizationKey(localizations, titleKey);
   }
-  
+
   /// Get localized message using S instance directly (for background notifications)
-  static String getLocalizedMessageWithInstance(S localizations, mostro.Action action, {Map<String, dynamic>? values}) {
+  static String getLocalizedMessageWithInstance(
+      S localizations, mostro.Action action,
+      {Map<String, dynamic>? values}) {
     final messageKey = getMessageKeyWithContext(action, values);
-    
+
     // Handle special keys that require parameters
     switch (messageKey) {
       case 'holdInvoicePaymentSettled':

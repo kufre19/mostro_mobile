@@ -1,6 +1,5 @@
 import 'package:mostro_mobile/data/models/payload.dart';
 
-
 class OrdersResponse implements Payload {
   final List<OrderDetail> orders;
 
@@ -69,8 +68,12 @@ class OrderDetail {
       fiatAmount: json['fiat_amount'] as int,
       paymentMethod: json['payment_method'] as String,
       premium: json['premium'] as int,
-      buyerTradePubkey: json['buyer_trade_pubkey'] != null ? json['buyer_trade_pubkey'] as String : null,
-      sellerTradePubkey: json['seller_trade_pubkey'] != null ? json['seller_trade_pubkey'] as String : null,
+      buyerTradePubkey: json['buyer_trade_pubkey'] != null
+          ? json['buyer_trade_pubkey'] as String
+          : null,
+      sellerTradePubkey: json['seller_trade_pubkey'] != null
+          ? json['seller_trade_pubkey'] as String
+          : null,
       createdAt: json['created_at'] != null ? json['created_at'] as int : null,
       expiresAt: json['expires_at'] != null ? json['expires_at'] as int : null,
     );

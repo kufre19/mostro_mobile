@@ -14,7 +14,8 @@ class NotificationHeader extends StatelessWidget {
       children: [
         Expanded(
           child: Text(
-            NotificationMessageMapper.getLocalizedTitle(context, notification.action),
+            NotificationMessageMapper.getLocalizedTitle(
+                context, notification.action),
             style: _getTitleStyle(context),
           ),
         ),
@@ -26,15 +27,15 @@ class NotificationHeader extends StatelessWidget {
   TextStyle? _getTitleStyle(BuildContext context) {
     final theme = Theme.of(context);
     final baseStyle = theme.textTheme.titleMedium;
-    final baseColor = notification.isRead 
-        ? theme.textTheme.bodyMedium?.color ?? theme.textTheme.titleMedium?.color
+    final baseColor = notification.isRead
+        ? theme.textTheme.bodyMedium?.color ??
+            theme.textTheme.titleMedium?.color
         : theme.textTheme.titleMedium?.color;
-    
+
     return baseStyle?.copyWith(
       fontWeight: FontWeight.w600,
-      color: notification.isRead 
-          ? baseColor?.withValues(alpha: 0.7)
-          : baseColor,
+      color:
+          notification.isRead ? baseColor?.withValues(alpha: 0.7) : baseColor,
     );
   }
 }

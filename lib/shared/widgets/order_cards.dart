@@ -27,13 +27,11 @@ class OrderAmountCard extends ConsumerWidget {
   });
 
   @override
-
   Widget build(BuildContext context, WidgetRef ref) {
     final currencyData = ref.watch(currencyCodesProvider).asData?.value;
     final currencyFlag =
         CurrencyUtils.getFlagFromCurrencyData(currency, currencyData);
     final amountString = '$amount $currency $currencyFlag';
-
 
     return CustomCard(
       padding: const EdgeInsets.all(16),
@@ -51,11 +49,12 @@ class OrderAmountCard extends ConsumerWidget {
           const SizedBox(height: 8),
           Row(
             children: [
-
               Flexible(
                 child: RichText(
                   text: TextSpan(
-                    text: S.of(context)!.forAmountWithCurrency(amountString, currency),
+                    text: S
+                        .of(context)!
+                        .forAmountWithCurrency(amountString, currency),
                     style: const TextStyle(
                       color: Colors.white70,
                       fontSize: 16,
@@ -70,7 +69,6 @@ class OrderAmountCard extends ConsumerWidget {
                           ),
                         ),
                     ],
-
                   ),
                   softWrap: true,
                   maxLines: 2,

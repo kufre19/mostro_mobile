@@ -33,7 +33,8 @@ class BackupReminderNotifier extends StateNotifier<bool> {
   bool get shouldShowBackupReminder => state;
 }
 
-final backupReminderProvider = StateNotifierProvider<BackupReminderNotifier, bool>((ref) {
+final backupReminderProvider =
+    StateNotifierProvider<BackupReminderNotifier, bool>((ref) {
   final prefs = ref.watch(sharedPreferencesProvider);
   return BackupReminderNotifier(prefs);
 });

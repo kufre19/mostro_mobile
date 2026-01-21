@@ -46,12 +46,12 @@ class _MostroAppState extends ConsumerState<MostroApp> {
   void _initializeDeepLinkInterceptor() {
     _deepLinkInterceptor = DeepLinkInterceptor();
     _deepLinkInterceptor!.initialize();
-    
+
     // Listen for intercepted custom URLs
     _customUrlSubscription = _deepLinkInterceptor!.customUrlStream.listen(
       (url) async {
         debugPrint('Intercepted custom URL: $url');
-        
+
         // Process the URL through our deep link handler
         if (_router != null) {
           try {
@@ -74,12 +74,12 @@ class _MostroAppState extends ConsumerState<MostroApp> {
     try {
       final appLinks = AppLinks();
       final initialUri = await appLinks.getInitialLink();
-      
+
       if (initialUri != null && initialUri.scheme == 'mostro') {
         // Store the initial mostro URL for later processing
         // and prevent it from being passed to GoRouter
         debugPrint('Initial mostro deep link detected: $initialUri');
-        
+
         // Schedule the deep link processing after the router is ready
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _handleInitialMostroLink(initialUri);
@@ -95,7 +95,7 @@ class _MostroAppState extends ConsumerState<MostroApp> {
     try {
       // Wait for router to be ready
       await Future.delayed(const Duration(milliseconds: 100));
-      
+
       if (_router != null) {
         final deepLinkHandler = ref.read(deepLinkHandlerProvider);
         await deepLinkHandler.handleInitialDeepLink(uri, _router!);
@@ -148,7 +148,7 @@ class _MostroAppState extends ConsumerState<MostroApp> {
             try {
               final deepLinkHandler = ref.read(deepLinkHandlerProvider);
               deepLinkHandler.initialize(_router!);
-              
+
               _deepLinksInitialized = true;
             } catch (e, stackTrace) {
               // Log the error but don't set _deepLinksInitialized to true

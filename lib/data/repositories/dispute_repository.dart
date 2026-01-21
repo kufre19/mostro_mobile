@@ -25,8 +25,8 @@ class DisputeRepository {
       // Get user's session for the order to get the trade key
       final sessions = _ref.read(sessionNotifierProvider);
       final session = sessions.firstWhereOrNull(
-            (s) => s.orderId == orderId,
-          );
+        (s) => s.orderId == orderId,
+      );
 
       if (session == null) {
         _logger
@@ -36,7 +36,8 @@ class DisputeRepository {
 
       // Validate trade key is present
       if (session.tradeKey.private.isEmpty) {
-        _logger.e('Trade key is empty for order: $orderId, cannot create dispute');
+        _logger
+            .e('Trade key is empty for order: $orderId, cannot create dispute');
         return false;
       }
 
@@ -75,13 +76,15 @@ class DisputeRepository {
         if (session.orderId != null) {
           try {
             // Get the order state for this session
-            final orderState = _ref.read(orderNotifierProvider(session.orderId!));
-            
+            final orderState =
+                _ref.read(orderNotifierProvider(session.orderId!));
+
             if (orderState.dispute != null) {
               disputes.add(orderState.dispute!);
             }
           } catch (e) {
-            _logger.w('Failed to get order state for order ${session.orderId}: $e');
+            _logger.w(
+                'Failed to get order state for order ${session.orderId}: $e');
           }
         }
       }
@@ -97,19 +100,19 @@ class DisputeRepository {
   Future<Dispute?> getDispute(String disputeId) async {
     try {
       _logger.d('Getting dispute by ID: $disputeId');
-      
+
       // Get all user disputes and find the one with matching ID
       final disputes = await getUserDisputes();
       final dispute = disputes.firstWhereOrNull(
         (d) => d.disputeId == disputeId,
       );
-      
+
       if (dispute != null) {
         _logger.d('Found dispute with ID: $disputeId');
       } else {
         _logger.w('No dispute found with ID: $disputeId');
       }
-      
+
       return dispute;
     } catch (e) {
       _logger.e('Failed to get dispute by ID $disputeId: $e');

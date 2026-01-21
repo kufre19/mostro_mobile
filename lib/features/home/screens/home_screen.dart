@@ -227,7 +227,8 @@ class HomeScreen extends ConsumerWidget {
               splashColor: AppTheme.activeColor.withValues(alpha: 0.3),
               highlightColor: AppTheme.activeColor.withValues(alpha: 0.15),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -254,7 +255,9 @@ class HomeScreen extends ConsumerWidget {
                       color: Colors.white.withValues(alpha: 0.2),
                     ),
                     Text(
-                      S.of(context)!.offersCount(filteredOrders.length.toString()),
+                      S
+                          .of(context)!
+                          .offersCount(filteredOrders.length.toString()),
                       style: const TextStyle(
                         color: Colors.grey,
                         fontSize: 12,

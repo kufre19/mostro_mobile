@@ -63,7 +63,8 @@ class _DisputeInputSectionState extends State<DisputeInputSection> {
                     fontSize: 16,
                   ),
                   decoration: InputDecoration(
-                    hintText: S.of(context)?.typeYourMessage ?? 'Type your message...',
+                    hintText: S.of(context)?.typeYourMessage ??
+                        'Type your message...',
                     hintStyle: TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 16,
@@ -117,7 +118,7 @@ class _DisputeInputSectionState extends State<DisputeInputSection> {
 
     final message = _messageController.text.trim();
     _messageController.clear();
-    
+
     setState(() {
       _isLoading = true;
     });
@@ -125,7 +126,7 @@ class _DisputeInputSectionState extends State<DisputeInputSection> {
     try {
       // Mock sending - just simulate delay
       await Future.delayed(const Duration(milliseconds: 500));
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

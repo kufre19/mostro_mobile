@@ -13,7 +13,7 @@ class OrderNotifier extends AbstractMostroNotifier {
   late final MostroService mostroService;
   ProviderSubscription<AsyncValue<List<NostrEvent>>>? _publicEventsSubscription;
   bool _isSyncing = false; // Only for sync() method
-  
+
   OrderNotifier(super.orderId, super.ref) {
     mostroService = ref.read(mostroServiceProvider);
     sync();
@@ -22,8 +22,10 @@ class OrderNotifier extends AbstractMostroNotifier {
   }
 
   @override
-  Future<void> handleEvent(MostroMessage event, {bool bypassTimestampGate = false}) async {
-    logger.i('OrderNotifier received event: ${event.action} for order $orderId');
+  Future<void> handleEvent(MostroMessage event,
+      {bool bypassTimestampGate = false}) async {
+    logger
+        .i('OrderNotifier received event: ${event.action} for order $orderId');
 
     // Handle the event normally - timeout/cancellation logic is now in AbstractMostroNotifier
     await super.handleEvent(event, bypassTimestampGate: bypassTimestampGate);
@@ -78,10 +80,10 @@ class OrderNotifier extends AbstractMostroNotifier {
       orderId: orderId,
       role: Role.buyer,
     );
-    
+
     // Start 10s timeout cleanup timer for orphan session prevention
     AbstractMostroNotifier.startSessionTimeoutCleanup(orderId, ref);
-    
+
     await mostroService.takeSellOrder(
       orderId,
       amount,
@@ -95,10 +97,10 @@ class OrderNotifier extends AbstractMostroNotifier {
       orderId: orderId,
       role: Role.seller,
     );
-    
+
     // Start 10s timeout cleanup timer for orphan session prevention
     AbstractMostroNotifier.startSessionTimeoutCleanup(orderId, ref);
-    
+
     await mostroService.takeBuyOrder(
       orderId,
       amount,
@@ -163,21 +165,22 @@ class OrderNotifier extends AbstractMostroNotifier {
           // Only detect automatic cancellation for pending orders
           final publicEvent = ref.read(eventProvider(orderId));
           final currentSession = ref.read(sessionProvider(orderId));
-          
-          if (publicEvent?.status == Status.canceled && 
+
+          if (publicEvent?.status == Status.canceled &&
               state.status == Status.pending &&
               currentSession != null) {
-            
-            logger.i('AUTOMATIC EXPIRATION: Order $orderId expired, removing from My Trades');
-            
+            logger.i(
+                'AUTOMATIC EXPIRATION: Order $orderId expired, removing from My Trades');
+
             // Delete session - order disappears from My Trades
             final sessionNotifier = ref.read(sessionNotifierProvider.notifier);
             await sessionNotifier.deleteSession(orderId);
-            
+
             // Show expiration notification
-            final notifProvider = ref.read(notificationActionsProvider.notifier);
+            final notifProvider =
+                ref.read(notificationActionsProvider.notifier);
             notifProvider.showCustomMessage('orderCanceled');
-            
+
             ref.invalidateSelf();
           }
         } catch (e, stack) {
@@ -196,5 +199,4 @@ class OrderNotifier extends AbstractMostroNotifier {
     _publicEventsSubscription?.close();
     super.dispose();
   }
-
 }

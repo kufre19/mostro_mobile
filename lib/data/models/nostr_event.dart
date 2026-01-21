@@ -35,8 +35,7 @@ extension NostrEventExtensions on NostrEvent {
   String? get name => _getTagValue('name') ?? 'Anon';
   String? get geohash => _getTagValue('g');
   String? get bond => _getTagValue('bond');
-  String? timeAgoWithLocale(String locale) =>
-      _timeAgoFromCreated(locale);
+  String? timeAgoWithLocale(String locale) => _timeAgoFromCreated(locale);
   DateTime get expirationDate => _getTimeStamp(_getTagValue('expiration')!);
   String? get expiresAt => _getTagValue('expires_at');
   String? get platform => _getTagValue('y');
@@ -60,7 +59,6 @@ extension NostrEventExtensions on NostrEvent {
         .subtract(Duration(hours: 12));
   }
 
-
   String _timeAgoFromCreated(String locale) {
     if (createdAt == null) return "invalid date";
     return timeago.format(createdAt!, allowFromNow: true, locale: locale);
@@ -74,7 +72,7 @@ extension NostrEventExtensions on NostrEvent {
   }
 
   /// Unwraps a Gift Wrap (kind 1059) following NIP-59 for Mostro dispute chat
-  /// 
+  ///
   /// Flow (as per mostro-cli):
   /// 1. Decrypt Gift Wrap (1059) with ephemeral_pubkey + receiver_private_key → SEAL (13)
   /// 2. Decrypt SEAL (13) with sender_pubkey + receiver_private_key → RUMOR (1, unsigned)
@@ -85,7 +83,7 @@ extension NostrEventExtensions on NostrEvent {
   String _sanitizeEventJson(String eventJson) {
     try {
       final Map<String, dynamic> eventMap = jsonDecode(eventJson);
-      
+
       // Only sanitize id and sig - these can be null in RUMORs (unsigned events)
       // Don't touch pubkey or content as they have validation that requires real values
       if (eventMap['id'] == null) {
@@ -94,7 +92,7 @@ extension NostrEventExtensions on NostrEvent {
       if (eventMap['sig'] == null) {
         eventMap['sig'] = '';
       }
-      
+
       return jsonEncode(eventMap);
     } catch (e) {
       // If parsing fails, return original
@@ -115,7 +113,7 @@ extension NostrEventExtensions on NostrEvent {
       // STEP 1: Decrypt Gift Wrap with ephemeral key
       // The Gift Wrap pubkey is the ephemeral public key
       final ephemeralPubkey = pubkey; // From the Gift Wrap event
-      
+
       try {
         final decryptedSeal = await NostrUtils.decryptNIP44(
           content!,
@@ -140,7 +138,7 @@ extension NostrEventExtensions on NostrEvent {
         // STEP 3: Decrypt SEAL with sender's pubkey (from SEAL)
         // The SEAL pubkey identifies the actual sender (admin or user)
         final senderPubkey = sealEvent.pubkey;
-        
+
         final decryptedRumor = await NostrUtils.decryptNIP44(
           sealEvent.content!,
           receiver.private,
@@ -161,7 +159,8 @@ extension NostrEventExtensions on NostrEvent {
       } catch (e) {
         // Add more context about which step failed
         if (e.toString().contains('type cast')) {
-          throw Exception('Type cast error during unwrap - likely null value in event structure: $e');
+          throw Exception(
+              'Type cast error during unwrap - likely null value in event structure: $e');
         }
         rethrow;
       }
@@ -171,16 +170,17 @@ extension NostrEventExtensions on NostrEvent {
   }
 
   /// Wraps a RUMOR (kind 1) into a Gift Wrap (kind 1059) following NIP-59
-  /// 
+  ///
   /// Flow (as per mostro-cli):
   /// 1. Create RUMOR (kind 1, unsigned) with Mostro message content
   /// 2. Encrypt RUMOR with sender_private_key + receiver_pubkey → SEAL (13)
   /// 3. Encrypt SEAL with ephemeral_key + receiver_pubkey → Gift Wrap (1059)
-  /// 
+  ///
   /// Parameters:
   /// - senderKeys: The sender's key pair (trade keys)
   /// - receiverPubkey: The receiver's public key (admin pubkey for disputes)
-  Future<NostrEvent> mostroWrap(NostrKeyPairs senderKeys, String receiverPubkey) async {
+  Future<NostrEvent> mostroWrap(
+      NostrKeyPairs senderKeys, String receiverPubkey) async {
     if (kind != 1) {
       throw ArgumentError('Expected kind 1 (RUMOR), got: $kind');
     }
@@ -196,7 +196,8 @@ extension NostrEventExtensions on NostrEvent {
         'kind': 1,
         'content': content,
         'pubkey': senderKeys.public,
-        'created_at': ((createdAt ?? DateTime.now()).millisecondsSinceEpoch ~/ 1000),
+        'created_at':
+            ((createdAt ?? DateTime.now()).millisecondsSinceEpoch ~/ 1000),
         'tags': tags ?? [],
       };
 
@@ -257,12 +258,13 @@ extension NostrEventExtensions on NostrEvent {
   /// P2P Chat: Simplified NIP-59 wrapper for peer-to-peer chat
   /// Wraps a signed kind 1 event directly in a kind 1059 wrapper
   /// This is different from mostroWrap which uses a SEAL intermediate layer
-  /// 
+  ///
   /// According to Mostro documentation:
   /// 1. Inner event is kind 1, signed by sender
   /// 2. Wrapper is kind 1059, encrypted with ephemeral key
   /// 3. No SEAL (kind 13) intermediate layer
-  Future<NostrEvent> p2pWrap(NostrKeyPairs senderKeys, String receiverPubkey) async {
+  Future<NostrEvent> p2pWrap(
+      NostrKeyPairs senderKeys, String receiverPubkey) async {
     if (kind != 1) {
       throw ArgumentError('Expected kind 1 event for P2P chat, got: $kind');
     }

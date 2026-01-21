@@ -10,36 +10,39 @@ import 'package:mostro_mobile/shared/providers.dart';
 class NotificationDataExtractor {
   /// Extract notification data from MostroMessage
   /// If ref is null, will use fallback methods for nickname resolution
-  static Future<NotificationData?> extractFromMostroMessage(MostroMessage event, Ref? ref, {Session? session}) async {
+  static Future<NotificationData?> extractFromMostroMessage(
+      MostroMessage event, Ref? ref,
+      {Session? session}) async {
     Map<String, dynamic> values = {};
     bool isTemporary = false;
-    
+
     switch (event.action) {
       case Action.newOrder:
         // No notification for new orders
         return null;
-        
+
       case Action.buyerTookOrder:
         final order = event.getPayload<Order>();
         if (order == null) return null;
-        
+
         // Extract buyer nym using provider or fallback
         final buyerNym = order.buyerTradePubkey != null
-            ? (ref != null 
+            ? (ref != null
                 ? ref.read(nickNameProvider(order.buyerTradePubkey!))
                 : await _getNicknameFromDatabase(order.buyerTradePubkey))
             : 'Unknown';
         values['buyer_npub'] = buyerNym;
         break;
-        
+
       case Action.payInvoice:
         // No additional values needed for this action
         break;
-        
+
       case Action.addInvoice:
         final order = event.getPayload<Order>();
-        final isAfterPaymentFailure = order?.status == Status.settledHoldInvoice;
-        
+        final isAfterPaymentFailure =
+            order?.status == Status.settledHoldInvoice;
+
         if (isAfterPaymentFailure) {
           final now = DateTime.now();
           values = {
@@ -49,17 +52,17 @@ class NotificationDataExtractor {
           };
         }
         break;
-        
+
       case Action.holdInvoicePaymentAccepted:
         final order = event.getPayload<Order>();
         if (order == null) return null;
-        
+
         values = {
           'fiat_code': order.fiatCode,
           'fiat_amount': order.fiatAmount,
           'payment_method': order.paymentMethod,
         };
-        
+
         if (order.sellerTradePubkey != null) {
           final sellerNym = ref != null
               ? ref.read(nickNameProvider(order.sellerTradePubkey!))
@@ -67,7 +70,7 @@ class NotificationDataExtractor {
           values['seller_npub'] = sellerNym;
         }
         break;
-        
+
       case Action.holdInvoicePaymentSettled:
         final order = event.getPayload<Order>();
         if (order?.buyerTradePubkey != null) {
@@ -77,7 +80,7 @@ class NotificationDataExtractor {
           values['buyer_npub'] = buyerNym;
         }
         break;
-        
+
       case Action.paymentFailed:
         final paymentFailed = event.getPayload<PaymentFailed>();
         values = {
@@ -85,29 +88,38 @@ class NotificationDataExtractor {
           'payment_retries_interval': paymentFailed?.paymentRetriesInterval,
         };
         break;
-        
+
       case Action.waitingSellerToPay:
         // Get expiration seconds from mostro instance or use default
         final expirationSeconds = ref != null
-            ? ref.read(orderRepositoryProvider).mostroInstance?.expirationSeconds ?? Config.expirationSeconds
+            ? ref
+                    .read(orderRepositoryProvider)
+                    .mostroInstance
+                    ?.expirationSeconds ??
+                Config.expirationSeconds
             : Config.expirationSeconds;
         values['expiration_seconds'] = expirationSeconds;
         break;
-        
+
       case Action.waitingBuyerInvoice:
         // Get expiration seconds from mostro instance or use default
         try {
           final expirationSeconds = ref != null
-              ? ref.read(orderRepositoryProvider).mostroInstance?.expirationSeconds ?? Config.expirationSeconds
+              ? ref
+                      .read(orderRepositoryProvider)
+                      .mostroInstance
+                      ?.expirationSeconds ??
+                  Config.expirationSeconds
               : Config.expirationSeconds;
           values['expiration_seconds'] = expirationSeconds;
-          Logger().d('waitingBuyerInvoice: extracted expiration_seconds=$expirationSeconds');
+          Logger().d(
+              'waitingBuyerInvoice: extracted expiration_seconds=$expirationSeconds');
         } catch (e) {
           Logger().e('waitingBuyerInvoice: Error accessing providers: $e');
           values['expiration_seconds'] = Config.expirationSeconds;
         }
         break;
-        
+
       case Action.fiatSent:
         // Notification for seller when buyer marks fiat as sent
         // This requires seller to release the funds
@@ -132,7 +144,7 @@ class NotificationDataExtractor {
           values['buyer_npub'] = buyerNym;
         }
         break;
-        
+
       case Action.released:
         final order = event.getPayload<Order>();
         if (order?.sellerTradePubkey != null) {
@@ -142,61 +154,61 @@ class NotificationDataExtractor {
           values['seller_npub'] = sellerNym;
         }
         break;
-        
+
       case Action.purchaseCompleted:
         // No additional values needed
         break;
-        
+
       case Action.canceled:
         // Canceled orders don't generate persistent notifications
         return null;
-        
+
       case Action.cooperativeCancelInitiatedByYou:
         // No additional values needed
         break;
-        
+
       case Action.cooperativeCancelInitiatedByPeer:
         // No additional values needed
         break;
-        
+
       case Action.disputeInitiatedByYou:
         final dispute = event.getPayload<Dispute>();
         if (dispute == null) return null;
-        
+
         values['user_token'] = dispute.disputeId;
         break;
-        
+
       case Action.disputeInitiatedByPeer:
         final dispute = event.getPayload<Dispute>();
         if (dispute == null) return null;
-        
+
         values['user_token'] = dispute.disputeId;
         break;
-        
+
       case Action.adminSettled:
         // No additional values needed
         break;
-        
+
       case Action.cantDo:
         final cantDo = event.getPayload<CantDo>();
         values['reason'] = cantDo?.cantDoReason.toString();
         isTemporary = true; // cantDo notifications are temporary
         break;
-        
+
       case Action.rate:
         // No additional values needed
         break;
-        
+
       case Action.rateReceived:
         // This action doesn't generate notifications
         return null;
-        
+
       default:
         // Unknown actions generate temporary notifications
         isTemporary = true;
         break;
     }
-    
+
     return NotificationData(
       action: event.action,
       values: values,
@@ -225,7 +237,7 @@ class NotificationData {
   final String? orderId;
   final String? eventId;
   final bool isTemporary;
-  
+
   const NotificationData({
     required this.action,
     required this.values,

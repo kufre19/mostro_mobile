@@ -45,12 +45,13 @@ void main() {
       mockKeyManager = MockKeyManager();
       mockMostroStorage = MockMostroStorage();
       ref = MockRef();
-      
+
       // Create test settings
       final testSettings = MockSettings();
-      
-      mockSessionNotifier = MockSessionNotifier(ref, mockKeyManager, mockSessionStorage, testSettings);
-      
+
+      mockSessionNotifier = MockSessionNotifier(
+          ref, mockKeyManager, mockSessionStorage, testSettings);
+
       // Stub the KeyManager methods
       when(mockKeyManager.masterKeyPair).thenReturn(
         NostrKeyPairs(
@@ -125,7 +126,8 @@ void main() {
           mockSettings.state = Settings(
             relays: ['wss://relay.damus.io'],
             fullPrivacyMode: false,
-            mostroPublicKey: '9d9d0455a96871f2dc4289b8312429db2e925f167b37c77bf7b28014be235980',
+            mostroPublicKey:
+                '9d9d0455a96871f2dc4289b8312429db2e925f167b37c77bf7b28014be235980',
             defaultFiatCode: 'USD',
           );
           return mockSettings;

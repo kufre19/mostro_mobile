@@ -42,7 +42,8 @@ class PaymentMethodsSection extends ConsumerWidget {
 
     return FormSection(
       title: S.of(context)!.paymentMethodsForCurrency(selectedFiatCode ?? ''),
-      icon: const Icon(Icons.credit_card, color: AppTheme.mostroGreen, size: 18),
+      icon:
+          const Icon(Icons.credit_card, color: AppTheme.mostroGreen, size: 18),
       iconBackgroundColor: AppTheme.mostroGreen.withValues(alpha: 0.3),
       extraContent: showCustomField
           ? Padding(
@@ -81,7 +82,8 @@ class PaymentMethodsSection extends ConsumerWidget {
                 .map((method) => _translatePaymentMethod(method, context))
                 .toList();
           } else {
-            availableMethods = List<String>.from(data['default'] ?? ['Bank Transfer', 'Cash in person', 'Other'])
+            availableMethods = List<String>.from(data['default'] ??
+                    ['Bank Transfer', 'Cash in person', 'Other'])
                 .map((method) => _translatePaymentMethod(method, context))
                 .toList();
           }
@@ -192,7 +194,8 @@ class PaymentMethodsSection extends ConsumerWidget {
                               borderSide: BorderSide(color: Colors.white24),
                             ),
                             focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: AppTheme.mostroGreen),
+                              borderSide:
+                                  BorderSide(color: AppTheme.mostroGreen),
                             ),
                           ),
                           // No need for an onChanged handler that updates the controller
@@ -224,7 +227,8 @@ class PaymentMethodsSection extends ConsumerWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.activeColor,
                     foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 16, horizontal: 24),
                     minimumSize: const Size(0, 52),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),

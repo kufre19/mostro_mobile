@@ -52,8 +52,8 @@ class NotificationItem extends ConsumerWidget {
   }
 
   Color? _getCardColor(BuildContext context) {
-    return notification.isRead 
-        ? Theme.of(context).cardTheme.color 
+    return notification.isRead
+        ? Theme.of(context).cardTheme.color
         : Theme.of(context).cardTheme.color?.withValues(alpha: 0.9);
   }
 
@@ -132,10 +132,10 @@ class NotificationItem extends ConsumerWidget {
   void _handleRateNotificationTap(BuildContext context, WidgetRef ref) {
     final orderId = notification.orderId;
     if (orderId == null) return;
-    
+
     // Check the current order state to see if rating has already been received
     final orderState = ref.read(orderNotifierProvider(orderId));
-    
+
     if (orderState.action == mostro_action.Action.rateReceived) {
       context.push('/trade_detail/$orderId');
     } else {
@@ -178,7 +178,9 @@ class NotificationItem extends ConsumerWidget {
           TextButton(
             onPressed: () async {
               try {
-                await ref.read(notificationsDatabaseProvider).deleteNotification(notification.id);
+                await ref
+                    .read(notificationsDatabaseProvider)
+                    .deleteNotification(notification.id);
               } catch (e) {
                 // Error handling - silently continue
               } finally {

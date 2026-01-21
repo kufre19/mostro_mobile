@@ -22,7 +22,6 @@ class OrderInfo {
 }
 
 class DeepLinkService {
-  
   final AppLinks _appLinks = AppLinks();
 
   // Stream controller for deep link events
@@ -51,7 +50,7 @@ class DeepLinkService {
 
       // NOTE: We don't process the initial link here to avoid GoRouter conflicts
       // The initial link will be handled by the app initialization in app.dart
-      
+
       _isInitialized = true;
       logger.i('DeepLinkService initialized successfully');
     } catch (e) {
@@ -142,7 +141,8 @@ class DeepLinkService {
       // First try to fetch from specified relays
       if (relays.isNotEmpty) {
         // Use the specific relays from the deep link URL
-        final orderEvents = await nostrService.fetchEvents(filter, specificRelays: relays);
+        final orderEvents =
+            await nostrService.fetchEvents(filter, specificRelays: relays);
         events.addAll(orderEvents);
       }
 
@@ -198,7 +198,7 @@ class DeepLinkService {
     final route = getNavigationRoute(orderInfo);
     logger.i(
         'Navigating to: $route (Order: ${orderInfo.orderId}, Type: ${orderInfo.orderType.value})');
-    
+
     // Use post-frame callback to ensure navigation happens after the current frame
     // This prevents GoRouter assertion failures during app lifecycle transitions
     WidgetsBinding.instance.addPostFrameCallback((_) {

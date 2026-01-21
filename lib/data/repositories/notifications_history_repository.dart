@@ -18,10 +18,9 @@ abstract class NotificationsRepository {
 }
 
 /// Sembast-based implementation using BaseStorage
-class NotificationsStorage extends BaseStorage<NotificationModel> 
+class NotificationsStorage extends BaseStorage<NotificationModel>
     implements NotificationsRepository {
-  
-  NotificationsStorage({required Database db}) 
+  NotificationsStorage({required Database db})
       : super(db, stringMapStoreFactory.store('notifications'));
 
   @override
@@ -71,7 +70,7 @@ class NotificationsStorage extends BaseStorage<NotificationModel>
   @override
   Future<List<NotificationModel>> getAllNotifications() async {
     return await find(
-      sort: [SortOrder('timestamp', false)], 
+      sort: [SortOrder('timestamp', false)],
     );
   }
 
@@ -95,12 +94,12 @@ class NotificationsStorage extends BaseStorage<NotificationModel>
       // Find only unread notifications within the transaction
       final finder = Finder(filter: Filter.equals('isRead', false));
       final unreadRecords = await store.find(txn, finder: finder);
-      
+
       if (unreadRecords.isNotEmpty) {
         // Batch update all unread notifications to read status
         await store.update(
-          txn, 
-          {'isRead': true}, 
+          txn,
+          {'isRead': true},
           finder: finder,
         );
       }
@@ -138,4 +137,3 @@ class NotificationsStorage extends BaseStorage<NotificationModel>
     return record != null;
   }
 }
-

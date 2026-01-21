@@ -188,13 +188,13 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
           body: SafeArea(
             child: Column(
               children: [
-                _buildStatsHeader(allLogs.length, logs.length, isLoggingEnabled),
+                _buildStatsHeader(
+                    allLogs.length, logs.length, isLoggingEnabled),
                 _buildSearchBar(),
                 _buildFilterChips(),
                 Expanded(
-                  child: logs.isEmpty
-                      ? _buildEmptyState()
-                      : _buildLogsList(logs),
+                  child:
+                      logs.isEmpty ? _buildEmptyState() : _buildLogsList(logs),
                 ),
               ],
             ),
@@ -219,7 +219,8 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
     );
   }
 
-  Widget _buildStatsHeader(int totalCount, int filteredCount, bool isLoggingEnabled) {
+  Widget _buildStatsHeader(
+      int totalCount, int filteredCount, bool isLoggingEnabled) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -331,7 +332,8 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
             borderRadius: BorderRadius.circular(8),
             borderSide: BorderSide.none,
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
         onChanged: (value) {
           setState(() {
@@ -390,7 +392,9 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
         fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
       ),
       side: BorderSide(
-        color: isSelected ? AppTheme.statusInfo : Colors.white.withValues(alpha: 0.1),
+        color: isSelected
+            ? AppTheme.statusInfo
+            : Colors.white.withValues(alpha: 0.1),
       ),
     );
   }
@@ -435,7 +439,8 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
     final bottomInset = MediaQuery.of(context).viewPadding.bottom;
     return ListView.builder(
       controller: _scrollController,
-      padding: EdgeInsets.only(left: 8, right: 8, top: 8, bottom: bottomInset + 64),
+      padding:
+          EdgeInsets.only(left: 8, right: 8, top: 8, bottom: bottomInset + 64),
       itemCount: logs.length,
       itemBuilder: (context, index) {
         final log = logs[logs.length - 1 - index];

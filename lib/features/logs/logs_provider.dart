@@ -27,7 +27,8 @@ class LogsNotifier extends StateNotifier<List<LogEntry>> {
   }
 }
 
-final filteredLogsProvider = Provider.family<List<LogEntry>, LogsFilter>((ref, filter) {
+final filteredLogsProvider =
+    Provider.family<List<LogEntry>, LogsFilter>((ref, filter) {
   final logs = ref.watch(logsProvider);
 
   var filteredLogs = logs;
@@ -41,7 +42,7 @@ final filteredLogsProvider = Provider.family<List<LogEntry>, LogsFilter>((ref, f
     final query = filter.searchQuery.toLowerCase();
     filteredLogs = filteredLogs.where((log) {
       return log.message.toLowerCase().contains(query) ||
-             log.service.toLowerCase().contains(query);
+          log.service.toLowerCase().contains(query);
     }).toList();
   }
 
@@ -50,11 +51,16 @@ final filteredLogsProvider = Provider.family<List<LogEntry>, LogsFilter>((ref, f
 
 Level _stringToLevel(String levelStr) {
   switch (levelStr) {
-    case 'error': return Level.error;
-    case 'warning': return Level.warning;
-    case 'info': return Level.info;
-    case 'debug': return Level.debug;
-    default: return Level.debug;
+    case 'error':
+      return Level.error;
+    case 'warning':
+      return Level.warning;
+    case 'info':
+      return Level.info;
+    case 'debug':
+      return Level.debug;
+    default:
+      return Level.debug;
   }
 }
 

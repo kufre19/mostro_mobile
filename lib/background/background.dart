@@ -7,7 +7,8 @@ import 'package:logger/logger.dart';
 import 'package:mostro_mobile/data/models/nostr_filter.dart';
 import 'package:mostro_mobile/data/repositories/event_storage.dart';
 import 'package:mostro_mobile/features/settings/settings.dart';
-import 'package:mostro_mobile/features/notifications/services/background_notification_service.dart' as notification_service;
+import 'package:mostro_mobile/features/notifications/services/background_notification_service.dart'
+    as notification_service;
 import 'package:mostro_mobile/services/nostr_service.dart';
 import 'package:mostro_mobile/services/logger_service.dart' as logger_service;
 import 'package:mostro_mobile/shared/providers/mostro_database_provider.dart';
@@ -44,7 +45,8 @@ Future<void> serviceMain(ServiceInstance service) async {
     );
 
     final settings = Settings.fromJson(settingsMap);
-    currentLanguage = settings.selectedLanguage ?? PlatformDispatcher.instance.locale.languageCode;
+    currentLanguage = settings.selectedLanguage ??
+        PlatformDispatcher.instance.locale.languageCode;
     await nostrService.init(settings);
 
     service.invoke('service-ready', {});
@@ -57,7 +59,8 @@ Future<void> serviceMain(ServiceInstance service) async {
     if (settingsMap == null) return;
 
     final settings = Settings.fromJson(settingsMap);
-    currentLanguage = settings.selectedLanguage ?? PlatformDispatcher.instance.locale.languageCode;
+    currentLanguage = settings.selectedLanguage ??
+        PlatformDispatcher.instance.locale.languageCode;
     await nostrService.updateSettings(settings);
 
     service.invoke('service-ready', {});

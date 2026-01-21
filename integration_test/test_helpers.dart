@@ -313,7 +313,7 @@ class FakeMostroService implements MostroService {
 
   @override
   void updateSettings(Settings settings) {}
-    
+
   @override
   void dispose() {
     // TODO: implement dispose

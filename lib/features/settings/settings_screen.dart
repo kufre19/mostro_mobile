@@ -32,10 +32,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   void initState() {
     super.initState();
     final settings = ref.read(settingsProvider);
-    _mostroTextController = TextEditingController(text: settings.mostroPublicKey);
-    _lightningAddressController = TextEditingController(text: settings.defaultLightningAddress ?? '');
+    _mostroTextController =
+        TextEditingController(text: settings.mostroPublicKey);
+    _lightningAddressController =
+        TextEditingController(text: settings.defaultLightningAddress ?? '');
   }
-
 
   @override
   void dispose() {
@@ -196,7 +197,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   decoration: BoxDecoration(
                     color: AppTheme.backgroundInput,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                    border:
+                        Border.all(color: Colors.white.withValues(alpha: 0.1)),
                   ),
                   child: Row(
                     children: [
@@ -372,7 +374,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Widget _buildLightningAddressCard(BuildContext context) {
-
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.backgroundCard,
@@ -443,8 +444,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 style: const TextStyle(color: AppTheme.textPrimary),
                 onChanged: (value) {
                   final cleanValue = value.trim().isEmpty ? null : value.trim();
-                  ref.read(settingsProvider.notifier).updateDefaultLightningAddress(cleanValue);
-                  
+                  ref
+                      .read(settingsProvider.notifier)
+                      .updateDefaultLightningAddress(cleanValue);
+
                   // Force sync immediately for empty values
                   if (cleanValue == null) {
                     _lightningAddressController.text = '';
@@ -598,16 +601,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   _debounceTimer?.cancel();
                   _debounceTimer = Timer(const Duration(seconds: 3), () async {
                     if (!mounted) return;
-                    
+
                     try {
                       if (_isValidPubkey(value)) {
                         setState(() {
                           _pubkeyError = null;
                         });
-                        
+
                         final hexValue = _convertToHex(value);
-                        final oldValue = ref.read(settingsProvider).mostroPublicKey;
-                        await ref.read(settingsProvider.notifier).updateMostroInstance(hexValue);
+                        final oldValue =
+                            ref.read(settingsProvider).mostroPublicKey;
+                        await ref
+                            .read(settingsProvider.notifier)
+                            .updateMostroInstance(hexValue);
 
                         // Check mounted after async operation
                         if (!mounted) return;
@@ -620,7 +626,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         // Trigger restore if pubkey changed
                         if (oldValue != hexValue && hexValue.isNotEmpty) {
                           try {
-                            final restoreService = ref.read(restoreServiceProvider);
+                            final restoreService =
+                                ref.read(restoreServiceProvider);
                             await restoreService.initRestoreProcess();
                           } catch (e) {
                             // Ignore errors during restore

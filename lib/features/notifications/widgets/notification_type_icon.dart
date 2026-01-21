@@ -41,7 +41,7 @@ class NotificationTypeIcon extends StatelessWidget {
     switch (type) {
       case NotificationType.orderUpdate:
         return _IconData(HeroIcons.plus, HeroIconStyle.outline);
-      
+
       case NotificationType.tradeUpdate:
         switch (action) {
           case actions.Action.buyerTookOrder:
@@ -53,7 +53,7 @@ class NotificationTypeIcon extends StatelessWidget {
           default:
             return _IconData(HeroIcons.arrowsRightLeft, HeroIconStyle.outline);
         }
-      
+
       case NotificationType.payment:
         switch (action) {
           case actions.Action.payInvoice:
@@ -71,16 +71,16 @@ class NotificationTypeIcon extends StatelessWidget {
           default:
             return _IconData(HeroIcons.currencyDollar, HeroIconStyle.outline);
         }
-      
+
       case NotificationType.dispute:
         return _IconData(HeroIcons.exclamationTriangle, HeroIconStyle.outline);
-      
+
       case NotificationType.cancellation:
         return _IconData(HeroIcons.xCircle, HeroIconStyle.outline);
-      
+
       case NotificationType.message:
         return _IconData(HeroIcons.chatBubbleLeft, HeroIconStyle.outline);
-      
+
       case NotificationType.system:
         return _IconData(HeroIcons.informationCircle, HeroIconStyle.outline);
     }
@@ -90,7 +90,7 @@ class NotificationTypeIcon extends StatelessWidget {
     switch (type) {
       case NotificationType.orderUpdate:
         return AppTheme.mostroGreen;
-      
+
       case NotificationType.tradeUpdate:
         switch (action) {
           case actions.Action.rate:
@@ -100,7 +100,7 @@ class NotificationTypeIcon extends StatelessWidget {
           default:
             return AppTheme.activeColor;
         }
-      
+
       case NotificationType.payment:
         switch (action) {
           case actions.Action.release:
@@ -113,16 +113,16 @@ class NotificationTypeIcon extends StatelessWidget {
           default:
             return AppTheme.statusInfo;
         }
-      
+
       case NotificationType.dispute:
         return AppTheme.statusError;
-      
+
       case NotificationType.cancellation:
         return AppTheme.statusError;
-      
+
       case NotificationType.message:
         return AppTheme.statusInfo;
-      
+
       case NotificationType.system:
         return AppTheme.textSecondary;
     }

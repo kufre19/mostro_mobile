@@ -78,7 +78,7 @@ class DisputesList extends ConsumerWidget {
           itemCount: disputes.length,
           itemBuilder: (context, index) {
             final disputeData = disputes[index];
-            
+
             return DisputeListItem(
               dispute: disputeData,
               onTap: () {

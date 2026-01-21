@@ -14,10 +14,10 @@ class DetailRow extends StatelessWidget {
   });
 
   bool _shouldUseMonospace(String value) {
-    return value.contains('npub') || 
-           value.contains('#') || 
-           value.contains('bc1') || // Bitcoin addresses
-           RegExp(r'^[0-9a-fA-F]{8,}$').hasMatch(value); // Hex strings
+    return value.contains('npub') ||
+        value.contains('#') ||
+        value.contains('bc1') || // Bitcoin addresses
+        RegExp(r'^[0-9a-fA-F]{8,}$').hasMatch(value); // Hex strings
   }
 
   @override
@@ -38,9 +38,13 @@ class DetailRow extends StatelessWidget {
             child: Text(
               '$label:',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w500,
-                color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.8),
-              ),
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.color
+                        ?.withValues(alpha: 0.8),
+                  ),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
             ),
@@ -50,9 +54,9 @@ class DetailRow extends StatelessWidget {
             child: Text(
               value,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontFamily: _shouldUseMonospace(value) ? 'monospace' : null,
-                color: Theme.of(context).textTheme.bodySmall?.color,
-              ),
+                    fontFamily: _shouldUseMonospace(value) ? 'monospace' : null,
+                    color: Theme.of(context).textTheme.bodySmall?.color,
+                  ),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
               softWrap: false,

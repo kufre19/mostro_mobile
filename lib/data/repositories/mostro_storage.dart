@@ -5,8 +5,6 @@ import 'package:mostro_mobile/data/models/mostro_message.dart';
 import 'package:mostro_mobile/data/repositories/base_storage.dart';
 
 class MostroStorage extends BaseStorage<MostroMessage> {
-  
-
   MostroStorage({required Database db})
       : super(db, stringMapStoreFactory.store('orders'));
 
@@ -173,8 +171,9 @@ class MostroStorage extends BaseStorage<MostroMessage> {
       ),
     );
 
-    return query.onSnapshots(db).map((snapshots) =>
-        snapshots.isNotEmpty ? MostroMessage.fromJson(snapshots.first.value) : null);
+    return query.onSnapshots(db).map((snapshots) => snapshots.isNotEmpty
+        ? MostroMessage.fromJson(snapshots.first.value)
+        : null);
   }
 
   Future<List<MostroMessage>> getAllMessagesForOrderId(String orderId) async {

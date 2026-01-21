@@ -49,8 +49,8 @@ void main() {
       // Create test settings
       final testSettings = MockSettings();
 
-      mockSessionNotifier =
-          MockSessionNotifier(ref, mockKeyManager, mockSessionStorage, testSettings);
+      mockSessionNotifier = MockSessionNotifier(
+          ref, mockKeyManager, mockSessionStorage, testSettings);
 
       // Stub the KeyManager methods
       when(mockKeyManager.masterKeyPair).thenReturn(

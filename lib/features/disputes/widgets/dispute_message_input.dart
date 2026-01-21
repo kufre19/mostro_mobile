@@ -13,7 +13,8 @@ class DisputeMessageInput extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<DisputeMessageInput> createState() => _DisputeMessageInputState();
+  ConsumerState<DisputeMessageInput> createState() =>
+      _DisputeMessageInputState();
 }
 
 class _DisputeMessageInputState extends ConsumerState<DisputeMessageInput> {
@@ -31,7 +32,9 @@ class _DisputeMessageInputState extends ConsumerState<DisputeMessageInput> {
     final text = _textController.text.trim();
     if (text.isNotEmpty) {
       // Send message through the dispute chat notifier
-      ref.read(disputeChatNotifierProvider(widget.disputeId).notifier).sendMessage(text);
+      ref
+          .read(disputeChatNotifierProvider(widget.disputeId).notifier)
+          .sendMessage(text);
       _textController.clear();
     }
   }
@@ -71,10 +74,11 @@ class _DisputeMessageInputState extends ConsumerState<DisputeMessageInput> {
                     decoration: InputDecoration(
                       hintText: S.of(context)!.typeAMessage,
                       hintStyle: TextStyle(
-                          color: AppTheme.textSecondary.withValues(alpha: 0.6), // 0.6 opacity
+                          color: AppTheme.textSecondary
+                              .withValues(alpha: 0.6), // 0.6 opacity
                           fontSize: 15),
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,

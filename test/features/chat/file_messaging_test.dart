@@ -25,7 +25,8 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   // Use valid keys from NIP-06 test vectors (same pattern as mostro_service_test.dart)
-  const validMnemonic = 'leader monkey parrot ring guide accident before fence cannon height naive bean';
+  const validMnemonic =
+      'leader monkey parrot ring guide accident before fence cannon height naive bean';
   final keyDerivator = KeyDerivator(Config.keyDerivationPath);
   final extendedPrivKey = keyDerivator.extendedKeyFromMnemonic(validMnemonic);
   final masterPrivKey = keyDerivator.derivePrivateKey(extendedPrivKey, 0);
@@ -78,8 +79,10 @@ void main() {
         final userBPrivateKey = peerPrivKey;
         final userBPublicKey = peerPublicKey;
 
-        final sharedKeyA = NostrUtils.computeSharedKey(userAPrivateKey, userBPublicKey);
-        final sharedKeyB = NostrUtils.computeSharedKey(userBPrivateKey, userAPublicKey);
+        final sharedKeyA =
+            NostrUtils.computeSharedKey(userAPrivateKey, userBPublicKey);
+        final sharedKeyB =
+            NostrUtils.computeSharedKey(userBPrivateKey, userAPublicKey);
 
         expect(sharedKeyA.private, equals(sharedKeyB.private));
       });
@@ -88,17 +91,18 @@ void main() {
         // Test that the same shared key derivation logic is used for files as for text messages
         // This test validates the actual key derivation, not mocks
         final sharedKeyHex = testSession.sharedKey!.private;
-        
+
         // Simulate the same conversion logic as ChatRoomNotifier.getSharedKey()
         final expectedBytes = Uint8List(32);
         for (int i = 0; i < 32; i++) {
-          final byte = int.parse(sharedKeyHex.substring(i * 2, i * 2 + 2), radix: 16);
+          final byte =
+              int.parse(sharedKeyHex.substring(i * 2, i * 2 + 2), radix: 16);
           expectedBytes[i] = byte;
         }
 
         // Test that we can encrypt and decrypt file data with the derived shared key
         final testFileData = Uint8List.fromList([1, 2, 3, 4, 5, 6, 7, 8]);
-        
+
         final encryptionResult = EncryptionService.encryptChaCha20Poly1305(
           key: expectedBytes,
           plaintext: testFileData,
@@ -114,13 +118,14 @@ void main() {
         // Verify the key works for file encryption/decryption
         expect(decryptedData, equals(testFileData));
         expect(expectedBytes.length, equals(32));
-        
+
         // Verify the hex conversion logic matches what ChatRoomNotifier would produce
         expect(sharedKeyHex.length, equals(64)); // 32 bytes * 2 hex chars
       });
 
       test('encrypts and decrypts files correctly', () {
-        final testData = Uint8List.fromList(List.generate(1000, (i) => i % 256));
+        final testData =
+            Uint8List.fromList(List.generate(1000, (i) => i % 256));
         final key = Uint8List.fromList(List.generate(32, (i) => i));
 
         final encryptionResult = EncryptionService.encryptChaCha20Poly1305(
@@ -173,7 +178,9 @@ void main() {
             key: key,
             plaintext: testData,
           );
-          final nonceHex = result.nonce.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+          final nonceHex = result.nonce
+              .map((b) => b.toRadixString(16).padLeft(2, '0'))
+              .join();
           nonces.add(nonceHex);
         }
 
@@ -193,7 +200,8 @@ void main() {
         final reconstructed = EncryptionResult.fromBlob(blob);
 
         expect(reconstructed.nonce, equals(encryptionResult.nonce));
-        expect(reconstructed.encryptedData, equals(encryptionResult.encryptedData));
+        expect(reconstructed.encryptedData,
+            equals(encryptionResult.encryptedData));
         expect(reconstructed.authTag, equals(encryptionResult.authTag));
       });
     });
@@ -204,7 +212,8 @@ void main() {
       });
 
       test('validates supported extensions', () {
-        final supportedExtensions = FileValidationService.getSupportedExtensions();
+        final supportedExtensions =
+            FileValidationService.getSupportedExtensions();
 
         expect(supportedExtensions, contains('.jpg'));
         expect(supportedExtensions, contains('.png'));
@@ -219,13 +228,23 @@ void main() {
         expect(FileValidationService.isFileTypeSupported('test.png'), isTrue);
         expect(FileValidationService.isFileTypeSupported('test.pdf'), isTrue);
         expect(FileValidationService.isFileTypeSupported('test.exe'), isFalse);
-        expect(FileValidationService.isFileTypeSupported('malware.bat'), isFalse);
+        expect(
+            FileValidationService.isFileTypeSupported('malware.bat'), isFalse);
       });
 
       test('checks file type support by MIME type', () {
-        expect(FileValidationService.isFileTypeSupported('test.unknown', mimeType: 'image/jpeg'), isTrue);
-        expect(FileValidationService.isFileTypeSupported('test.unknown', mimeType: 'application/pdf'), isTrue);
-        expect(FileValidationService.isFileTypeSupported('test.unknown', mimeType: 'application/x-executable'), isFalse);
+        expect(
+            FileValidationService.isFileTypeSupported('test.unknown',
+                mimeType: 'image/jpeg'),
+            isTrue);
+        expect(
+            FileValidationService.isFileTypeSupported('test.unknown',
+                mimeType: 'application/pdf'),
+            isTrue);
+        expect(
+            FileValidationService.isFileTypeSupported('test.unknown',
+                mimeType: 'application/x-executable'),
+            isFalse);
       });
 
       test('handles zero-byte files', () {
@@ -234,7 +253,8 @@ void main() {
 
       test('validates real JPEG file with API', () async {
         // Create a temporary JPEG file with valid headers
-        final tempDir = await Directory.systemTemp.createTemp('file_validation_test');
+        final tempDir =
+            await Directory.systemTemp.createTemp('file_validation_test');
         final jpegFile = File('${tempDir.path}/test.jpg');
         await jpegFile.writeAsBytes(_createTestJpeg());
 
@@ -251,7 +271,8 @@ void main() {
       });
 
       test('validates real PNG file with API', () async {
-        final tempDir = await Directory.systemTemp.createTemp('file_validation_test');
+        final tempDir =
+            await Directory.systemTemp.createTemp('file_validation_test');
         final pngFile = File('${tempDir.path}/test.png');
         await pngFile.writeAsBytes(_createTestPng());
 
@@ -266,9 +287,10 @@ void main() {
       });
 
       test('rejects oversized file with API', () async {
-        final tempDir = await Directory.systemTemp.createTemp('file_validation_test');
+        final tempDir =
+            await Directory.systemTemp.createTemp('file_validation_test');
         final oversizedFile = File('${tempDir.path}/large.txt');
-        
+
         // Create a file that exceeds 25MB limit
         final largeData = Uint8List(26 * 1024 * 1024); // 26MB
         await oversizedFile.writeAsBytes(largeData);
@@ -282,9 +304,10 @@ void main() {
       });
 
       test('rejects unsupported file type with API', () async {
-        final tempDir = await Directory.systemTemp.createTemp('file_validation_test');
+        final tempDir =
+            await Directory.systemTemp.createTemp('file_validation_test');
         final exeFile = File('${tempDir.path}/malware.exe');
-        
+
         // Create a fake exe file
         final exeData = Uint8List.fromList([
           0x4D, 0x5A, // PE executable header
@@ -332,7 +355,9 @@ void main() {
       test('validates real JPEG with MediaValidationService API', () async {
         final jpegData = _createRealJpeg();
 
-        final result = await MediaValidationService.validateAndSanitizeImageLight(jpegData);
+        final result =
+            await MediaValidationService.validateAndSanitizeImageLight(
+                jpegData);
 
         expect(result.imageType, equals(SupportedImageType.jpeg));
         expect(result.mimeType, equals('image/jpeg'));
@@ -346,7 +371,8 @@ void main() {
       test('validates real PNG with MediaValidationService API', () async {
         final pngData = _createRealPng();
 
-        final result = await MediaValidationService.validateAndSanitizeImageLight(pngData);
+        final result =
+            await MediaValidationService.validateAndSanitizeImageLight(pngData);
 
         expect(result.imageType, equals(SupportedImageType.png));
         expect(result.mimeType, equals('image/png'));
@@ -357,28 +383,37 @@ void main() {
         expect(result.height, equals(10));
       });
 
-      test('rejects invalid image data with MediaValidationService API', () async {
-        final invalidData = Uint8List.fromList([0x42, 0x41, 0x44, 0x00]); // Invalid header
+      test('rejects invalid image data with MediaValidationService API',
+          () async {
+        final invalidData =
+            Uint8List.fromList([0x42, 0x41, 0x44, 0x00]); // Invalid header
 
         expect(
-          () async => await MediaValidationService.validateAndSanitizeImageLight(invalidData),
+          () async =>
+              await MediaValidationService.validateAndSanitizeImageLight(
+                  invalidData),
           throwsA(isA<MediaValidationException>()),
         );
       });
 
-      test('rejects empty image data with MediaValidationService API', () async {
+      test('rejects empty image data with MediaValidationService API',
+          () async {
         final emptyData = Uint8List(0);
 
         expect(
-          () async => await MediaValidationService.validateAndSanitizeImageLight(emptyData),
+          () async =>
+              await MediaValidationService.validateAndSanitizeImageLight(
+                  emptyData),
           throwsA(isA<MediaValidationException>()),
         );
       });
 
-      test('heavy sanitization works with MediaValidationService API', () async {
+      test('heavy sanitization works with MediaValidationService API',
+          () async {
         final jpegData = _createRealJpeg();
 
-        final result = await MediaValidationService.validateAndSanitizeImage(jpegData);
+        final result =
+            await MediaValidationService.validateAndSanitizeImage(jpegData);
 
         expect(result.imageType, equals(SupportedImageType.jpeg));
         expect(result.mimeType, equals('image/jpeg'));
@@ -390,11 +425,16 @@ void main() {
       });
 
       test('checks image type support with MediaValidationService API', () {
-        expect(MediaValidationService.isImageTypeSupported('image/jpeg'), isTrue);
-        expect(MediaValidationService.isImageTypeSupported('image/png'), isTrue);
-        expect(MediaValidationService.isImageTypeSupported('image/gif'), isFalse);
-        expect(MediaValidationService.isImageTypeSupported('image/bmp'), isFalse);
-        expect(MediaValidationService.isImageTypeSupported('application/pdf'), isFalse);
+        expect(
+            MediaValidationService.isImageTypeSupported('image/jpeg'), isTrue);
+        expect(
+            MediaValidationService.isImageTypeSupported('image/png'), isTrue);
+        expect(
+            MediaValidationService.isImageTypeSupported('image/gif'), isFalse);
+        expect(
+            MediaValidationService.isImageTypeSupported('image/bmp'), isFalse);
+        expect(MediaValidationService.isImageTypeSupported('application/pdf'),
+            isFalse);
       });
     });
 
@@ -421,7 +461,8 @@ void main() {
       });
 
       test('exposes configured server URL', () async {
-        final blossomClient = BlossomClient(serverUrl: 'https://blossom.server.com');
+        final blossomClient =
+            BlossomClient(serverUrl: 'https://blossom.server.com');
 
         // Verify URL construction logic
         expect(blossomClient.serverUrl, equals('https://blossom.server.com'));
@@ -552,9 +593,12 @@ void main() {
     group('Complete File Sharing Flows', () {
       test('handles file sharing between different sessions', () {
         // Create session 1 with different derived keys
-        final session1TradeKey = keyDerivator.derivePrivateKey(extendedPrivKey, 10);
-        final session1PeerKey = keyDerivator.derivePrivateKey(extendedPrivKey, 11);
-        final session1PeerPublic = keyDerivator.privateToPublicKey(session1PeerKey);
+        final session1TradeKey =
+            keyDerivator.derivePrivateKey(extendedPrivKey, 10);
+        final session1PeerKey =
+            keyDerivator.derivePrivateKey(extendedPrivKey, 11);
+        final session1PeerPublic =
+            keyDerivator.privateToPublicKey(session1PeerKey);
 
         final session1 = Session(
           masterKey: NostrKeyPairs(private: masterPrivKey),
@@ -567,10 +611,13 @@ void main() {
           peer: Peer(publicKey: session1PeerPublic),
         );
 
-        // Create session 2 with different derived keys  
-        final session2TradeKey = keyDerivator.derivePrivateKey(extendedPrivKey, 20);
-        final session2PeerKey = keyDerivator.derivePrivateKey(extendedPrivKey, 21);
-        final session2PeerPublic = keyDerivator.privateToPublicKey(session2PeerKey);
+        // Create session 2 with different derived keys
+        final session2TradeKey =
+            keyDerivator.derivePrivateKey(extendedPrivKey, 20);
+        final session2PeerKey =
+            keyDerivator.derivePrivateKey(extendedPrivKey, 21);
+        final session2PeerPublic =
+            keyDerivator.privateToPublicKey(session2PeerKey);
 
         final session2 = Session(
           masterKey: NostrKeyPairs(private: masterPrivKey),
@@ -583,7 +630,8 @@ void main() {
           peer: Peer(publicKey: session2PeerPublic),
         );
 
-        expect(session1.sharedKey!.private, isNot(equals(session2.sharedKey!.private)));
+        expect(session1.sharedKey!.private,
+            isNot(equals(session2.sharedKey!.private)));
       });
     });
 
@@ -724,4 +772,3 @@ Uint8List _createRealPng() {
   img.fill(image, color: img.ColorRgb8(0, 0, 255)); // Fill with blue
   return Uint8List.fromList(img.encodePng(image));
 }
-

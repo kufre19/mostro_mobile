@@ -28,11 +28,13 @@ class MessageTypeUtils {
       return false;
     }
   }
-  
+
   /// Get the message type enum for more structured handling
   static MessageContentType getMessageType(NostrEvent message) {
-    if (isEncryptedImageMessage(message)) return MessageContentType.encryptedImage;
-    if (isEncryptedFileMessage(message)) return MessageContentType.encryptedFile;
+    if (isEncryptedImageMessage(message))
+      return MessageContentType.encryptedImage;
+    if (isEncryptedFileMessage(message))
+      return MessageContentType.encryptedFile;
     return MessageContentType.text;
   }
 }

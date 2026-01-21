@@ -14,7 +14,9 @@ class NotificationMessage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          NotificationMessageMapper.getLocalizedMessage(context, notification.action, values: notification.data),
+          NotificationMessageMapper.getLocalizedMessage(
+              context, notification.action,
+              values: notification.data),
           style: _getMessageStyle(context),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
@@ -29,9 +31,13 @@ class NotificationMessage extends StatelessWidget {
 
   TextStyle? _getMessageStyle(BuildContext context) {
     return Theme.of(context).textTheme.bodyMedium?.copyWith(
-      color: notification.isRead
-          ? Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.6)
-          : Theme.of(context).textTheme.bodyMedium?.color,
-    );
+          color: notification.isRead
+              ? Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.color
+                  ?.withValues(alpha: 0.6)
+              : Theme.of(context).textTheme.bodyMedium?.color,
+        );
   }
 }

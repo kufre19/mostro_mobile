@@ -19,11 +19,13 @@ class CantDo implements Payload {
       } else if (cantDoValue is Map<String, dynamic>) {
         final cantDoReason = cantDoValue['cant-do'];
         if (cantDoReason == null) {
-          throw FormatException('Missing required field: cant-do in cant_do object');
+          throw FormatException(
+              'Missing required field: cant-do in cant_do object');
         }
         reasonString = cantDoReason.toString();
       } else {
-        throw FormatException('Invalid cant_do type: ${cantDoValue.runtimeType}');
+        throw FormatException(
+            'Invalid cant_do type: ${cantDoValue.runtimeType}');
       }
 
       if (reasonString.isEmpty) {
@@ -49,16 +51,16 @@ class CantDo implements Payload {
 
   @override
   String get type => 'cant_do';
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     return other is CantDo && other.cantDoReason == cantDoReason;
   }
-  
+
   @override
   int get hashCode => cantDoReason.hashCode;
-  
+
   @override
   String toString() => 'CantDo(cantDoReason: $cantDoReason)';
 }

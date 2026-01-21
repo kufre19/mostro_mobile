@@ -13,14 +13,15 @@ class TextMessage implements Payload {
     try {
       final messageValue = json['message'] ?? json['text_message'];
       if (messageValue == null) {
-        throw FormatException('Missing required field: message or text_message');
+        throw FormatException(
+            'Missing required field: message or text_message');
       }
-      
+
       final messageString = messageValue.toString();
       if (messageString.isEmpty) {
         throw FormatException('Text message cannot be empty');
       }
-      
+
       return TextMessage(message: messageString);
     } catch (e) {
       throw FormatException('Failed to parse TextMessage from JSON: $e');
@@ -36,16 +37,16 @@ class TextMessage implements Payload {
 
   @override
   String get type => 'text_message';
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     return other is TextMessage && other.message == message;
   }
-  
+
   @override
   int get hashCode => message.hashCode;
-  
+
   @override
   String toString() => 'TextMessage(message: $message)';
 }

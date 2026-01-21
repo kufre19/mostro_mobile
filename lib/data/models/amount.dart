@@ -21,7 +21,7 @@ class Amount implements Payload {
       if (json == null) {
         throw FormatException('Amount JSON cannot be null');
       }
-      
+
       int amountValue;
       if (json is Map<String, dynamic>) {
         if (!json.containsKey('amount')) {
@@ -31,20 +31,21 @@ class Amount implements Payload {
         if (value is int) {
           amountValue = value;
         } else if (value is String) {
-          amountValue = int.tryParse(value) ?? 
-            (throw FormatException('Invalid amount format: $value'));
+          amountValue = int.tryParse(value) ??
+              (throw FormatException('Invalid amount format: $value'));
         } else {
           throw FormatException('Invalid amount type: ${value.runtimeType}');
         }
       } else if (json is int) {
         amountValue = json;
       } else if (json is String) {
-        amountValue = int.tryParse(json) ?? 
-          (throw FormatException('Invalid amount format: $json'));
+        amountValue = int.tryParse(json) ??
+            (throw FormatException('Invalid amount format: $json'));
       } else {
-        throw FormatException('Invalid JSON type for Amount: ${json.runtimeType}');
+        throw FormatException(
+            'Invalid JSON type for Amount: ${json.runtimeType}');
       }
-      
+
       return Amount(amount: amountValue);
     } catch (e) {
       throw FormatException('Failed to parse Amount from JSON: $e');
@@ -53,16 +54,16 @@ class Amount implements Payload {
 
   @override
   String get type => 'amount';
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     return other is Amount && other.amount == amount;
   }
-  
+
   @override
   int get hashCode => amount.hashCode;
-  
+
   @override
   String toString() => 'Amount(amount: $amount)';
 }

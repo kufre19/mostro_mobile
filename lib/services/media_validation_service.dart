@@ -53,7 +53,7 @@ class MediaValidationResult {
 
 class MediaValidationService {
   static final Logger _logger = Logger();
-  
+
   /// Sanitizes and validates image exactly like whitenoise
   /// 1. Detects format from data (not extension)
   /// 2. Validates that it's a complete and valid image
@@ -63,7 +63,7 @@ class MediaValidationService {
   ) async {
     return _sanitizeImageHeavy(imageData);
   }
-  
+
   /// Light image sanitization for better performance
   /// 1. Detects format using magic bytes
   /// 2. Basic integrity check via decode
@@ -73,17 +73,17 @@ class MediaValidationService {
     Uint8List imageData,
   ) async {
     _logger.i('📸 Light image sanitization started: ${imageData.length} bytes');
-    
+
     if (imageData.isEmpty) {
       throw MediaValidationException('File is empty');
     }
 
     // STEP 1: Detect format using magic bytes
     SupportedImageType? detectedType;
-    
+
     // Use mime package for initial detection
     final mimeType = lookupMimeType('', headerBytes: imageData);
-    
+
     switch (mimeType) {
       case 'image/jpeg':
         detectedType = SupportedImageType.jpeg;
@@ -93,8 +93,7 @@ class MediaValidationService {
         break;
       default:
         throw MediaValidationException(
-          'Unsupported image format: $mimeType. Supported formats: ${SupportedImageTypeExtension.all.map((t) => t.mimeType).join(", ")}'
-        );
+            'Unsupported image format: $mimeType. Supported formats: ${SupportedImageTypeExtension.all.map((t) => t.mimeType).join(", ")}');
     }
 
     // STEP 2: Basic integrity check via decode (no pixel validation)
@@ -103,15 +102,13 @@ class MediaValidationService {
       decodedImage = img.decodeImage(imageData);
       if (decodedImage == null) {
         throw MediaValidationException(
-          'Invalid or corrupted ${detectedType.mimeType} image: Could not decode'
-        );
+            'Invalid or corrupted ${detectedType.mimeType} image: Could not decode');
       }
     } on MediaValidationException {
       rethrow;
     } catch (e) {
       throw MediaValidationException(
-        'Invalid or corrupted ${detectedType.mimeType} image: $e'
-      );
+          'Invalid or corrupted ${detectedType.mimeType} image: $e');
     }
 
     // STEP 3: Quick re-encode to strip metadata with minimal quality loss
@@ -120,7 +117,8 @@ class MediaValidationService {
       switch (detectedType) {
         case SupportedImageType.jpeg:
           // Use quality 95 to minimize quality loss while stripping EXIF
-          sanitizedData = Uint8List.fromList(img.encodeJpg(decodedImage, quality: 95));
+          sanitizedData =
+              Uint8List.fromList(img.encodeJpg(decodedImage, quality: 95));
           break;
         case SupportedImageType.png:
           // PNG is lossless, so no quality concerns
@@ -131,8 +129,9 @@ class MediaValidationService {
       throw MediaValidationException('Failed to re-encode image: $e');
     }
 
-    _logger.i('✅ Light image sanitization completed: ${sanitizedData.length} bytes');
-    
+    _logger.i(
+        '✅ Light image sanitization completed: ${sanitizedData.length} bytes');
+
     return MediaValidationResult(
       imageType: detectedType,
       mimeType: detectedType.mimeType,
@@ -142,23 +141,23 @@ class MediaValidationService {
       height: decodedImage.height,
     );
   }
-  
+
   /// Heavy image sanitization (original method) for maximum security
   static Future<MediaValidationResult> _sanitizeImageHeavy(
     Uint8List imageData,
   ) async {
     _logger.i('🔒 Heavy image sanitization started: ${imageData.length} bytes');
-    
+
     if (imageData.isEmpty) {
       throw MediaValidationException('File is empty');
     }
 
     // STEP 1: Detect format using magic bytes (like whitenoise)
     SupportedImageType? detectedType;
-    
+
     // Use mime package for initial detection
     final mimeType = lookupMimeType('', headerBytes: imageData);
-    
+
     switch (mimeType) {
       case 'image/jpeg':
         detectedType = SupportedImageType.jpeg;
@@ -168,8 +167,7 @@ class MediaValidationService {
         break;
       default:
         throw MediaValidationException(
-          'Unsupported image format: $mimeType. Supported formats: ${SupportedImageTypeExtension.all.map((t) => t.mimeType).join(", ")}'
-        );
+            'Unsupported image format: $mimeType. Supported formats: ${SupportedImageTypeExtension.all.map((t) => t.mimeType).join(", ")}');
     }
 
     // STEP 2: Validate using image package (like whitenoise)
@@ -179,15 +177,13 @@ class MediaValidationService {
       decodedImage = img.decodeImage(imageData);
       if (decodedImage == null) {
         throw MediaValidationException(
-          'Invalid or corrupted ${detectedType.mimeType} image: Could not decode'
-        );
+            'Invalid or corrupted ${detectedType.mimeType} image: Could not decode');
       }
     } on MediaValidationException {
       rethrow;
     } catch (e) {
       throw MediaValidationException(
-        'Invalid or corrupted ${detectedType.mimeType} image: $e'
-      );
+          'Invalid or corrupted ${detectedType.mimeType} image: $e');
     }
 
     // STEP 3: Re-encode to sanitize (removes EXIF and other metadata)
@@ -195,7 +191,8 @@ class MediaValidationService {
     try {
       switch (detectedType) {
         case SupportedImageType.jpeg:
-          sanitizedData = Uint8List.fromList(img.encodeJpg(decodedImage, quality: 90));
+          sanitizedData =
+              Uint8List.fromList(img.encodeJpg(decodedImage, quality: 90));
           break;
         case SupportedImageType.png:
           sanitizedData = Uint8List.fromList(img.encodePng(decodedImage));
@@ -205,7 +202,8 @@ class MediaValidationService {
       throw MediaValidationException('Failed to re-encode image: $e');
     }
 
-    _logger.i('✅ Heavy image sanitization completed: ${sanitizedData.length} bytes');
+    _logger.i(
+        '✅ Heavy image sanitization completed: ${sanitizedData.length} bytes');
 
     return MediaValidationResult(
       imageType: detectedType,
@@ -216,7 +214,7 @@ class MediaValidationService {
       height: decodedImage.height,
     );
   }
-  
+
   /// Check if image type is supported in the new format restrictions
   static bool isImageTypeSupported(String mimeType) {
     return mimeType == 'image/jpeg' || mimeType == 'image/png';
@@ -226,7 +224,7 @@ class MediaValidationService {
 class MediaValidationException implements Exception {
   final String message;
   MediaValidationException(this.message);
-  
+
   @override
   String toString() => 'MediaValidationException: $message';
 }

@@ -17,14 +17,14 @@ EventStorage eventStorage(Ref ref) {
 MostroService mostroService(Ref ref) {
   final mostroService = MostroService(ref);
   mostroService.init();
-  
+
   ref.listen(settingsProvider, (previous, next) {
     mostroService.updateSettings(next);
   });
-  
+
   ref.onDispose(() {
     mostroService.dispose();
   });
-  
+
   return mostroService;
 }
